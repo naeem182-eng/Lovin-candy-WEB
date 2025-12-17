@@ -3,12 +3,11 @@
 :root {
   --font-patrick-hand: 'Patrick Hand', cursive;
   --font-jua: 'Jua', sans-serif;
+  background: #FAF3F3;
 }
-
 h1 {
   font-family: var(--font-jua);
 }
-
 body {
   font-family: var(--font-patrick-hand);
 }

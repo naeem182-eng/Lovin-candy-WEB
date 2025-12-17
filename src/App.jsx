@@ -6,7 +6,7 @@ const router = createBrowserRouter([
   {
   path: "/",
   element: <Layout />,
-  errorElement: 
+  errorElement:
     (
     <div className="min-h-screen flex justify-center items-center bg-[#FAF3F3]">
       <h1 className="text-4xl">404 Page Not Found</h1>
