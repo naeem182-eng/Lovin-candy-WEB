@@ -1,7 +1,8 @@
-import ProfileElementA from "../components/ProfileElementA";
-import ProfileElementB from "../components/ProfileElementB";
-import '../components/ProfileElement.css';
-import ProfileElementC from "../components/ProfileElementC";
+import ProfileElementA from "../../components/MyProfile/ProfileElementA";
+import ProfileElementB from "../../components/MyProfile/ProfileElementB";
+import '../../components/MyProfile/ProfileElement.css';
+import ProfileElementC from "../../components/MyProfile/ProfileElementC";
+import ProfileElementD from "../../components/MyProfile/ProfileElementD";
 
 export default function MyProfile() {
   return (
@@ -11,7 +12,7 @@ export default function MyProfile() {
           <ProfileElementA />
         </div>
 
-        <div className="flex flex-col gap-5 w-full">
+        <div className="flex flex-col gap-5 w-full min-w-0 overflow-hidden">
           <div className="flex justify-between">
             <h1 className="text-5xl ml-6 mt-5">My Profile</h1>
             <button 
@@ -26,7 +27,9 @@ export default function MyProfile() {
           <div className="profile-c">
           <ProfileElementC />
         </div>
-
+        <div className="profile-d">
+          <ProfileElementD />
+        </div>
         </div>
       </div>
       

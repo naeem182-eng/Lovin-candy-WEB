@@ -1,12 +1,12 @@
 .element-a {
   margin: 20px;
-  padding: 40px 70px;
+  padding: 40px 40px;
   background: white;
   border-radius: 1.5rem;
   box-shadow: 0 1px 10px rgba(192, 192, 192, 0.5);
   font-family: "Patrick Hand", cursive;
   width: 100%;
-  min-width: 350px;
+  min-width: 300px;
   
 }
 
@@ -72,6 +72,7 @@
   width: 90%;
   max-width: 1600px;
   margin: 0 auto;
+  
 }
 
 .picpic {
