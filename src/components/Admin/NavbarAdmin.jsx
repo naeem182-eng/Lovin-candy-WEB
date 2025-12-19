@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function NavbarAdmin() {
   return (
-    <nav className="bg-[# FFEB76] shadow-sm">
+    <nav className="bg-[#FFEB76] shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
         <Link
@@ -23,16 +23,11 @@ export default function NavbarAdmin() {
               Home
             </Link>
           </li>
-          <li>
-            <Link to="/" className="hover:opacity-70">
-              Customize
-            </Link>
-          </li>
-          <li>
+         {/*  <li>
             <Link to="/" className="hover:opacity-70">
               Product
             </Link>
-          </li>
+          </li> */}
         </ul>
         </div>
         </nav>

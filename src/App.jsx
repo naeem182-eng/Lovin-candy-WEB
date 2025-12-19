@@ -9,6 +9,8 @@ import MyAddress from "./views/MyProfile-pages/MyAddress";
 import MyPayment from "./views/MyProfile-pages/MyPayment";
 import Products from "./views/Products";
 import Admin from "./views/Admin";
+import AdminLayout from "./components/Admin/AdminLayout";
+
 
 const router = createBrowserRouter([
   {
@@ -31,6 +33,21 @@ const router = createBrowserRouter([
     {path: "/profile/payment", element: <MyPayment />,},
     {path: "/admin" ,element: <Admin />},
   ],
+  },
+
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    errorElement:
+    (
+    <div className="min-h-screen flex justify-center items-center bg-[#FAF3F3]">
+      <h1 className="text-4xl">404 Page Not Found</h1>
+    </div>
+    ),
+    children: [
+      {index: true, element: <Admin />,},
+
+    ],
   },
 ]);
 

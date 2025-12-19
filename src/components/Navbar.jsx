@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { BsCart4 } from "react-icons/bs";
 
+
 export default function Navbar() {
   return (
     <nav className="bg-[#A6EAFF] shadow-sm">
@@ -39,6 +40,9 @@ export default function Navbar() {
           </li>
           <li>
             <Link to="/profile" >My Profile</Link>
+          </li>
+          <li>
+            <Link to="/admin" >Admin</Link>
           </li>
         </ul>
 

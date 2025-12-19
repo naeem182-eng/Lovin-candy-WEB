@@ -56,7 +56,7 @@ export default function Products() {
     <section className="w-full">
     <div className="mx-auto w-full max-w-6xl px-4 py-10"></div>
     <div className="flex justify-center mb-10">
-          <h1 className="w-full max-w-4xl text-4xl font-bold text-center bg-[#A6EAFF] py-6 rounded-full">
+          <h1 className="w-full max-w-md text-4xl font-bold text-center bg-[#A6EAFF] py-6 rounded-full">
             Product
           </h1>
         </div>
