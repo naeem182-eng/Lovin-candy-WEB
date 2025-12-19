@@ -12,7 +12,7 @@ export default function MyProfile() {
           <ProfileElementA />
         </div>
 
-        <div className="flex flex-col gap-5 w-full">
+        <div className="flex flex-col gap-5 w-full min-w-0 overflow-hidden">
           <div className="flex justify-between">
             <h1 className="text-5xl ml-6 mt-5">My Profile</h1>
             <button 
