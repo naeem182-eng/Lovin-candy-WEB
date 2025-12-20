@@ -8,7 +8,7 @@ import MyFavItems from "./views/MyProfile-pages/MyFavItems";
 import MyAddress from "./views/MyProfile-pages/MyAddress";
 import MyPayment from "./views/MyProfile-pages/MyPayment";
 import Products from "./views/Products";
-import Admin from "./views/Admin";
+import Admin from "./views/Admin-pages/Admin";
 import AdminLayout from "./components/Admin/AdminLayout";
 
 const router = createBrowserRouter([
