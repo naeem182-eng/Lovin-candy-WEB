@@ -20,7 +20,17 @@ const router = createBrowserRouter([
         <h1 className="text-4xl">404 Page Not Found</h1>
       </div>
     ),
-    children: [{ path: "/", element: <Home /> }],
+    children: [
+      { path: "/", element: <Home /> },
+      { path: "/products", element: <Products /> },
+      { path: "/customize", element: <Customize /> },
+      { path: "/profile", element: <MyProfile /> },
+      { path: "/profile/order", element: <MyOrder /> },
+      { path: "/profile/favitems", element: <MyFavItems /> },
+      { path: "/profile/address", element: <MyAddress /> },
+      { path: "/profile/payment", element: <MyPayment /> },
+      { path: "/admin", element: <Admin /> },
+    ],
   },
 
   {
