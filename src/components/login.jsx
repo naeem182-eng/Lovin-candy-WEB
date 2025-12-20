@@ -42,12 +42,14 @@ const login = () => {
             <AiOutlineUnlock className="absolute top-4 right-4" />
           </div>
 
-          <div>
-            <div>
+          <div className="flex justify-between items-center">
+            <div className="flex gap-2 items-center">
               <input type="checkbox" name="" id="" />
               <label htmlFor="Remember Me">Remember Me</label>
             </div>
-            <span>Forgot Password?</span>
+            <Link to="" className="text-blue-500">
+              Forgot Password?
+            </Link>
           </div>
 
           <button className="" type="submit">
@@ -56,7 +58,7 @@ const login = () => {
 
           <div>
             <span>
-              New Here? <Link to="Register">Create an Account</Link>
+              New Here? <Link to="/register">Create an Account</Link>
             </span>
           </div>
         </form>
