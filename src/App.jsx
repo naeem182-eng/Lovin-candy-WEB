@@ -12,6 +12,8 @@ import Admin from "./views/Admin-pages/Admin";
 import AdminLayout from "./components/Admin/AdminLayout";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import ProfileAddressEdit from "./components/MyProfile/ProfileAddressEdit";
+import ProfileAddressButton from "./components/MyProfile/ProfileAddressButton";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +36,8 @@ const router = createBrowserRouter([
       { path: "/admin", element: <Admin /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
+      { path: "/profile/address/edit", element: <ProfileAddressEdit /> },
+      { path: "/profile/address", element: <ProfileAddressButton /> },
     ],
   },
 
