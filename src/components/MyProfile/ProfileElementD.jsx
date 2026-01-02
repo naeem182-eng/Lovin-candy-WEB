@@ -1,5 +1,5 @@
   import './ProfileElement.css';
-  import PopularPicks from "../../components/PopularPicks";
+  //import PopularPicks from "../../components/PopularPicks";
 
   export default function ProfileElementD () {
     return (
