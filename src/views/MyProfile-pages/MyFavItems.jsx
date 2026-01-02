@@ -1,6 +1,6 @@
 import ProfileElementA from "../../components/MyProfile/ProfileElementA";
-import ProfileElementC from "../../components/MyProfile/ProfileElementC";
 import '../../components/MyProfile/ProfileElement.css';
+import ProfileFavItems from "../../components/MyProfile/ProfileFavItems";
 
 export default function MyFavItems() {
   return (
@@ -14,7 +14,7 @@ export default function MyFavItems() {
             <h1 className="text-5xl ml-6 mt-5">My Favourite Items</h1>
 
           <div className="profile-c">
-            <ProfileElementC />
+            <ProfileFavItems />
           </div>
         </div>
       </div>
