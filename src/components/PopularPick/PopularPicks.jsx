@@ -76,56 +76,60 @@ export default function PopularPicks() {
               "
             >
               {mockProducts.map((candy) => (
-                <div
-                  key={candy.id}
-                  className="
-                   w-56
-                  bg-white
-                  rounded-2xl
-                  p-4
-                  shadow-sm
-                  hover:shadow-md
-                  shrink-0
-                  "
-                >
-                  {/* Image */}
-                  <button
-                    onClick={() => setPreviewImage(candy.image)}
-                    className="aspect-square rounded-xl mb-4 overflow-hidden bg-[#EAF9FF]"
-                  >
-                    <img
-                      src={candy.image}
-                      alt={candy.name}
-                      className="w-full h-full object-cover hover:scale-105 transition"
-                    />
-                  </button>
+  <div
+    key={candy.id}
+    className="
+      w-56
+      h-95
+      bg-white
+      rounded-2xl
+      p-4
+      shadow-sm
+      hover:shadow-md
+      shrink-0
+      flex flex-col
+    "
+  >
+    {/* Image */}
+    <button
+      onClick={() => setPreviewImage(candy.image)}
+      className="h-50 rounded-xl mb-3 overflow-hidden bg-[#EAF9FF]"
+    >
+      <img
+        src={candy.image}
+        alt={candy.name}
+        className="w-full h-full object-cover hover:scale-105 transition"
+      />
+    </button>
 
-                  {/* Name */}
-                  <h3 className="font-['Jua'] text-lg mb-1 ">
-                    {candy.name}
-                  </h3>
+    {/* Name (ล็อกสูง 2 บรรทัด) */}
+    <h3 className="font-['Jua'] text-lg mb-2 line-clamp-2 min-h-12">
+      {candy.name}
+    </h3>
 
-                  {/* Price */}
-                  <p className="text-sm text-center font-['Patrick_Hand'] mb-3" >
-                    {candy.price}
-                  </p>
+    {/* Bottom zone */}
+    <div className="flex-1 flex flex-col justify-end">
+      <p className="text-sm text-center font-['Patrick_Hand'] mb-3">
+        {candy.price}
+      </p>
 
-                  {/* CTA */}
-                  <Link to="/cart" className="mt-auto">
-                    <button
-                      className="
-                        w-full py-2 rounded-full
-                        bg-[#A6EAFF]
-                        font-['Jua'] text-sm
-                        hover:bg-[#8fdff7]
-                        transition
-                      "
-                    >
-                      I want this 🛒
-                    </button>
-                  </Link>
-                </div>
-              ))}
+      <Link to="/cart">
+        <button
+          className="
+            w-full py-2 rounded-full
+            bg-[#A6EAFF]
+            font-['Jua'] text-sm
+            hover:bg-[#8fdff7]
+            transition
+          "
+        >
+          I want this 🛒
+        </button>
+      </Link>
+    </div>
+  </div>
+))}
+
             </div>
 
             {/* → Arrow */}
