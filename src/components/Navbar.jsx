@@ -9,14 +9,14 @@ export default function Navbar() {
     <nav className="bg-[#A6EAFF] shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        {/* LEFT : Logo */}
+        
         <Link to="/" className="flex items-center gap-2 font-['Jua'] text-xl">
           <img
             src="/logo.png"
             alt="LovinCandy logo"
             className="h-10 w-auto object-contain md:h-14"
           />
-          <span>LovinCandy</span>
+           <span className="hidden md:inline">LovinCandy</span>
         </Link>
 
         {/* DESKTOP MENU */}
