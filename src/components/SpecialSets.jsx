@@ -1,9 +1,11 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import specialSets from "../data/specialSets";
+import  ImagePreviewModal  from "./PopularPick/ImagePreviewModal";
 
 export default function SpecialSets() {
   const scrollRef = useRef(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const scroll = (direction) => {
     if (!scrollRef.current) return;
@@ -15,14 +17,15 @@ export default function SpecialSets() {
   };
 
   return (
-    <section className="w-full py-16 bg-[#FAF3F3]">
+  <>
+    <section className="w-full py-16 bg-[#EAF9FF]">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <h2 className="text-3xl font-['Jua'] mb-2">
-              🍭🍫🍬🪅Special Sets🪅🍬🍫🍭
+              Special Sets
             </h2>
             <p className="text-gray-600 font-['Patrick_Hand'] text-lg">
               Sweet favorites everyone’s loving right now
@@ -31,7 +34,7 @@ export default function SpecialSets() {
 
           {/* CTA */}
           <Link
-            to="/SpecialSetsPage"
+            to="/SpecialSets"
             className="
               flex items-center gap-2
               text-blue-500 font-medium
@@ -72,51 +75,55 @@ export default function SpecialSets() {
               overflow-x-auto
               scroll-smooth
               pb-4
-              [-ms-overflow-style:none]
-              [scrollbar-width:none]
-              [&::-webkit-scrollbar]:hidden
+              px-12
+              overflow-hidden
+              no-scrollbar
             "
           >
             {specialSets.map((special, index) => (
               <div
                 key={index}
                 className="
-                  min-w-[220px]
-                  sm:min-w-[240px]
+                  w-56
                   bg-white
                   rounded-2xl
                   p-4
                   shadow-sm
                   hover:shadow-md
-                  transition
                   shrink-0
                 "
               >
-                <div className="w-full h-48 rounded-xl mb-4 overflow-hidden bg-[#EAF9FF]">
+                 {/* Image */}
+                  <button
+                    onClick={() => setPreviewImage(special.image)}
+                    className="aspect-square rounded-xl mb-4 overflow-hidden bg-[#EAF9FF]"
+                  >
                   <img
                     src={special.image}
                     alt={special.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover hover:scale-105 transition"
                   />
-                </div>
+                </button>
 
-                <h3 className="font-['Jua'] text-lg mb-1">
+                <h3 className="font-['Jua'] text-lg text-center mb-1">
                   {special.name}
                 </h3>
 
-                <p className="text-sm text-gray-500 font-['Patrick_Hand'] mb-3">
-                  {special.desc}
+                <p className="text-sm text-center font-['Patrick_Hand'] mb-3">
+                  {special.price}
                 </p>
 
+                <Link to="/cart" className="flex items-center gap-2 font-['Jua'] text-xl">
                 <button className="
+                mt-auto
                   w-full py-2 rounded-full
                   bg-[#A6EAFF]
                   font-['Jua'] text-sm
                   hover:bg-[#8fdff7]
-                  transition
-                ">
-                  Add to cart 🛒
+                  transition">
+                  i want this 🛒
                 </button>
+                </Link>
               </div>
             ))}
           </div>
@@ -141,5 +148,14 @@ export default function SpecialSets() {
         </div>
       </div>
     </section>
+
+     {/* ===== Image Preview Modal ===== */}
+          {previewImage && (
+            <ImagePreviewModal
+              image={previewImage}
+              onClose={() => setPreviewImage(null)}
+            />
+          )}
+  </>
   );
 }

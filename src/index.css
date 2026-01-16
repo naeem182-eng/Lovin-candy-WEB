@@ -1,13 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --font-patrick-hand: "Patrick Hand", cursive;
-  --font-jua: "Jua", sans-serif;
-  background: #faf3f3;
+  --font-patrick-hand: 'Patrick Hand', cursive;
+  --font-jua: 'Jua', sans-serif;
+  background: #FAF3F3;
 }
 h1 {
   font-family: var(--font-jua);
 }
 body {
   font-family: var(--font-patrick-hand);
+}
+/* global.css */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
