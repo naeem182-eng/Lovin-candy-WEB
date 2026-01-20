@@ -6,7 +6,7 @@ import './ProfileElement.css';
     return (
       <div>
         <div>
-          <h2 className='mt-10 text-center text-4xl font-[Jua] bg-[#FFEB76]/35 p-5 rounded-2xl underline decoration-wavy'>CHECK OUT OUR MORE ITEMS!</h2>
+          <h2 className='mt-10 text-center text-4xl font-[Jua] bg-[#d2f2ff] p-5 rounded-tl-2xl rounded-tr-2xl'>CHECK OUT OUR MORE ITEMS!</h2>
         </div>
         <div>
 
@@ -27,8 +27,11 @@ import './ProfileElement.css';
               <img className="w-72 h-72 object-cover rounded-xl mb-5" src="/Strawberry Shortcake Cream Swirl Lollipop Bag.png" alt="Strawberry Shortcake Cream Swirl Lollipop Bag"/>
               Strawberry Shortcake Cream Swirl Lollipop</li>
           </ul> */}
-          <div>
+          <div className='mb-20'>
             <PopularPicks />
+            <div className='rounded-bl-2xl rounded-br-2xl bg-[#d2f2ff] text-center py-4'>
+              🍬🍭🍬
+            </div>
           </div>
         </div>
       </div>

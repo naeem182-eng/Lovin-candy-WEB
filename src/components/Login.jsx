@@ -31,6 +31,7 @@ const Login = () => {
 
         alert("Login Successful!");
         navigate("/");
+        window.location.href = "/";
       }
     } catch (err) {
       setError(err.response?.data?.message || "Email or Password incorrect");

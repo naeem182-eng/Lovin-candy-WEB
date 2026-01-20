@@ -1,20 +1,20 @@
 import './ProfileElement.css';
 
-export default function ProfileElementC () {
+export default function ProfileElementC ({ data }) {
   return (
     <>
     <div className='element-c'>
       <div className='tableitemsc'>
         <span className='text-lg'> Name - Surname</span>
-        <span> asdadasd sadweawresd asdasd</span>
+        <span>{data?.first_name} {data?.last_name || "-"}</span>
       </div>
       <div className='tableitemsc'>
         <span className='text-lg'>Email</span>
-        <span>namenamenamsn@gmail.com</span>
+        <span>{data?.email || "No email"}</span>
       </div>
       <div className='tableitemsc'>
         <span className='text-lg'>Phone Number</span>
-        <span>+90 555 555 55 55</span>
+        <span>{data?.phone || data?.phoneNumber || "No phone number"}</span>
       </div>
     </div>
     </>

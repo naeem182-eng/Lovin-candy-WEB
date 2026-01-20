@@ -1,9 +1,29 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsCart4, BsList, BsX } from "react-icons/bs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLogin(false);
+    setOpen(false); // ปิดเมนูมือถือถ้าเปิดอยู่
+    alert("Logged out successfully!");
+    navigate("/login");
+  };
 
   return (
     <nav className="bg-[#A6EAFF] shadow-sm sticky top-0 z-50">
@@ -36,12 +56,21 @@ export default function Navbar() {
           </Link>
 
           {/* Login */}
-          <Link
-            to="/login"
-            className="hidden md:inline-block bg-white px-4 py-1 rounded-full text-sm shadow hover:bg-gray-100 transition"
-          >
-            Sign in | Register
-          </Link>
+          {isLogin ? (
+            <button
+              onClick={handleLogout}
+              className="hidden md:inline-block bg-pink-400 text-white px-4 py-1 rounded-full text-sm shadow hover:bg-pink-500 transition"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="hidden md:inline-block bg-white px-4 py-1 rounded-full text-sm shadow hover:bg-gray-100 transition"
+            >
+              Sign in | Register
+            </Link>
+          )}
 
           {/* HAMBURGER (mobile only) */}
           <button
@@ -64,13 +93,22 @@ export default function Navbar() {
             <li><Link to="/profile" onClick={() => setOpen(false)}>My Profile</Link></li>
             <li><Link to="/admin" onClick={() => setOpen(false)}>Admin</Link></li>
             <li>
-              <Link
-                to="/login"
-                onClick={() => setOpen(false)}
-                className="inline-block bg-white px-4 py-1 rounded-full text-sm shadow"
-              >
-                Sign in | Register
-              </Link>
+              {isLogin ? (
+                <button
+                  onClick={handleLogout}
+                  className="inline-block bg-pink-400 text-white px-4 py-1 rounded-full text-sm shadow w-full text-center"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="inline-block bg-white px-4 py-1 rounded-full text-sm shadow w-full text-center"
+                >
+                  Sign in | Register
+                </Link>
+              )}
             </li>
           </ul>
         </div>

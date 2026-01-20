@@ -93,7 +93,7 @@ export default function ProductManagement() {
     return null;
   };
 
- 
+
   const onSubmit = async (e) => {
     e.preventDefault();
     const err = validate();
