@@ -6,10 +6,10 @@ export default function ProductCard({ id, imageUrl, name, price }) {
 
   const handleAddToCart = () => {
     addToCart({
-      id,
-      name,
-      imageUrl,
-      price,
+      _id: id,
+      name: name,
+      imageUrl: imageUrl,
+      price: price,
     });
   };
 

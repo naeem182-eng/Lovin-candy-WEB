@@ -13,7 +13,7 @@ const CartItem = ({ cartItem, onIncrease, onDecrease, onRemoveItem }) => {
         <div className="w-32 h-32 border-2 border-black flex items-center justify-center bg-white flex-shrink-0">
           <img
             className="w-24 h-24 object-contain"
-            src={cartItem?.image}
+            src={cartItem?.imageUrl}
             alt={cartItem?.name}
           />
         </div>

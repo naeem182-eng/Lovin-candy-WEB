@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard";
 
-const API_BASE = "http://localhost:3000/api/products";
+// const API_BASE = "http://localhost:3000/api/products";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -14,6 +15,7 @@ export default function Products() {
   // filters
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sort, setSort] = useState("newest");
+
 
   // debounce search
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function Products() {
 
         if (search) params.append("q", search);
 
-        const res = await fetch(`${API_BASE}?${params.toString()}`);
+        const res = await fetch(`${API_BASE}/products?${params.toString()}`);
         const data = await res.json();
 
         if (data.success) {
@@ -147,6 +149,7 @@ export default function Products() {
                 imageUrl={product.imageUrl}
                 name={product.name}
                 price={product.price}
+                product={product}
               />
             ))}
           </div>
