@@ -1,9 +1,15 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../components/Cart/UserCart.jsx";
 
 export default function Customize() {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedCandies, setSelectedCandies] = useState([]);
+
   const candySection = useRef(null);
+
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const packages = [
     {
@@ -12,7 +18,7 @@ export default function Customize() {
       candyLimit: 2,
       price: 200,
       image: "/bag.png",
-      description: "Holds 2 sweet sins",
+      description: " Pick up to 2 sins 😇 ",
     },
     {
       id: "bowl",
@@ -20,7 +26,7 @@ export default function Customize() {
       candyLimit: 4,
       price: 300,
       image: "/bowl.png",
-      description: "Holds 4 sweet sins",
+      description: "Pick up to 4 sins 😏",
     },
     {
       id: "jar",
@@ -28,7 +34,7 @@ export default function Customize() {
       candyLimit: 8,
       price: 400,
       image: "/jar.png",
-      description: "Holds 8 sweet sins",
+      description: "Pick up to 8 sins 😈",
     },
   ];
 
@@ -70,6 +76,7 @@ export default function Customize() {
   function handleSelectPackage(pkg) {
     setSelectedSize(pkg);
     setSelectedCandies([]);
+
     setTimeout(() => {
       candySection.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
@@ -88,20 +95,46 @@ export default function Customize() {
     setSelectedCandies(selectedCandies.filter((c) => c.cartId !== cartId));
   }
 
+  function handleCancel() {
+    setSelectedSize(null);
+    setSelectedCandies([]);
+
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+    }, 100);
+  }
+
+  function handleCheckout() {
+    selectedCandies.forEach((candy) => {
+      addToCart({
+        id: candy.cartId,
+        name: candy.name,
+        image: candy.image,
+        price: selectedSize.price / selectedSize.candyLimit,
+      });
+    });
+
+    navigate("/checkout");
+  }
+
   const isCartFull = selectedCandies.length >= (selectedSize?.candyLimit || 0);
 
   return (
-    <div className="min-h-screen flex bg-[#fff7fa] font-['Patrick_Hand']">
+    <div className="min-h-screen flex bg-[#fff7fa]">
       <div className="flex-1 px-6 pr-[420px] pb-20">
         <div className="text-center my-12">
-          <h1 className="text-[42px] font-['Jua'] text-gray-800 drop-shadow">
-            🍬 Customize Your Candy Package
+          <h1 className="text-[42px] text-gray-800 drop-shadow font-bold">
+            🍭 Customize Your Sweet Guilty Pleasure
           </h1>
         </div>
 
         <section className="max-w-6xl mx-auto my-16">
-          <h2 className="text-3xl font-['Jua'] text-center mb-8">
-            Step 1: Select your level of guilt 😈
+          <h2 className="text-3xl text-center mb-8 font-bold">
+            Step 1: Choose your level of guilt 😈
           </h2>
 
           <div className="flex gap-5 justify-center flex-wrap">
@@ -121,7 +154,7 @@ export default function Customize() {
                   alt={pkg.name}
                   className="w-28 h-28 mx-auto mb-3 object-contain"
                 />
-                <h3 className="text-xl font-['Jua']">{pkg.name}</h3>
+                <h3 className="text-xl font-bold">{pkg.name}</h3>
                 <p className="text-gray-600">{pkg.description}</p>
                 <p className="text-2xl font-bold text-[#ff7ab6] mt-2">
                   ฿{pkg.price}
@@ -133,26 +166,26 @@ export default function Customize() {
 
         {selectedSize && (
           <section ref={candySection} className="max-w-6xl mx-auto my-16">
-            <h2 className="text-3xl font-['Jua'] text-center mb-8">
-              Step 2: Choose your sweet sins ({selectedCandies.length}/
+            <h2 className="text-3xl text-center mb-10 font-bold">
+              Step 2: Pick your sweet sins 🍭 ({selectedCandies.length}/
               {selectedSize.candyLimit})
             </h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
               {candyOptions.map((candy) => (
                 <div
                   key={candy.id}
-                  className="bg-[#A6EAFF] rounded-xl p-4 flex flex-col items-center"
+                  className="bg-[#A6EAFF] rounded-2xl p-5 flex flex-col items-center h-full shadow-md hover:shadow-xl transition"
                 >
-                  <div className="h-28 flex items-center justify-center mb-2">
+                  <div className="h-32 flex items-center justify-center mb-4">
                     <img
                       src={candy.image}
                       alt={candy.name}
-                      className="max-h-24 object-contain"
+                      className="max-h-28 object-contain"
                     />
                   </div>
 
-                  <p className="text-[#ff74b1] font-bold text-center mb-3">
+                  <p className="text-[#ff4f9a] text-lg font-bold text-center min-h-[56px] mb-4">
                     {candy.name}
                   </p>
 
@@ -160,13 +193,15 @@ export default function Customize() {
                     disabled={isCartFull}
                     onClick={() => handleAddCandy(candy)}
                     className="
-                      bg-[#ff7ab6] text-white font-bold
-                      px-6 py-2 rounded-full
-                      hover:bg-[#ff5a9d]
-                      disabled:bg-gray-300 disabled:cursor-not-allowed
+                      mt-auto
+                      bg-gradient-to-r from-[#ff7ab6] to-[#ff4f9a]
+                      text-white font-bold
+                      px-8 py-2.5 rounded-full
+                      hover:scale-105 transition
+                      disabled:from-gray-300 disabled:to-gray-300
                     "
                   >
-                    {isCartFull ? "Full" : "+ Add"}
+                    {isCartFull ? "No more sins" : "Add this sin"}
                   </button>
                 </div>
               ))}
@@ -174,25 +209,20 @@ export default function Customize() {
           </section>
         )}
       </div>
-      <aside
-        className="
-        fixed right-0 top-0 bottom-0 w-[400px]
-        bg-white shadow-[-4px_0_10px_rgba(0,0,0,0.2)]
-        flex flex-col
-      "
-      >
+
+      <aside className="fixed right-0 top-0 bottom-0 w-[400px] bg-white shadow-[-4px_0_10px_rgba(0,0,0,0.2)] flex flex-col">
         <div className="bg-gradient-to-r from-[#A6EAFF] to-[#ff7ab6] p-5 text-white">
-          <h2 className="text-2xl font-['Jua']">Your Cart</h2>
+          <h2 className="text-2xl font-bold">Your Guilt</h2>
         </div>
 
         <div className="flex-1 p-5 overflow-y-auto">
           {!selectedSize ? (
             <p className="text-center text-gray-400 italic">
-              Please select a package first
+              Start by choosing your guilt 😈
             </p>
           ) : (
             <>
-              <div className="flex items-center gap-4 bg-gray-100 p-4 rounded-lg mb-4">
+              <div className="bg-gray-100 p-4 rounded-lg mb-2 flex items-center gap-4">
                 <img
                   src={selectedSize.image}
                   className="w-14 h-14 object-contain"
@@ -200,7 +230,7 @@ export default function Customize() {
                 <div>
                   <h3 className="font-bold">{selectedSize.name}</h3>
                   <p className="text-sm text-gray-600">
-                    {selectedSize.candyLimit} candies max
+                    {selectedSize.candyLimit} sins max
                   </p>
                 </div>
                 <span className="ml-auto text-xl font-bold text-[#ff7ab6]">
@@ -208,9 +238,15 @@ export default function Customize() {
                 </span>
               </div>
 
+              <button
+                onClick={handleCancel}
+                className="w-full mb-4 py-2 rounded-lg border border-red-300 text-red-500 font-bold hover:bg-red-50"
+              >
+                Change my guilt 😈
+              </button>
+
               <h3 className="font-bold mb-2">
-                Selected Candies ({selectedCandies.length}/
-                {selectedSize.candyLimit})
+                Sweet sins ({selectedCandies.length}/{selectedSize.candyLimit})
               </h3>
 
               <div className="space-y-2">
@@ -236,15 +272,17 @@ export default function Customize() {
 
               <button
                 disabled={selectedCandies.length !== selectedSize.candyLimit}
+                onClick={handleCheckout}
                 className="
-                  w-full mt-6 py-3 rounded-xl text-white font-bold text-lg
+                  w-full mt-6 py-3 rounded-xl
+                  text-white font-bold text-lg
                   bg-gradient-to-r from-[#A6EAFF] to-[#ff7ab6]
                   disabled:bg-gray-300
                 "
               >
                 {selectedCandies.length === selectedSize.candyLimit
-                  ? `Checkout - ฿${selectedSize.price}`
-                  : `Add ${selectedSize.candyLimit - selectedCandies.length} more candy`}
+                  ? `Accept my guilt – ฿${selectedSize.price} 😈`
+                  : `Add ${selectedSize.candyLimit - selectedCandies.length} more sins`}
               </button>
             </>
           )}

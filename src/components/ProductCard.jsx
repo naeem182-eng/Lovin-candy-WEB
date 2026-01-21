@@ -1,13 +1,14 @@
+
 import { useCart } from "../components/Cart/UserCart.jsx";
 
-export default function ProductCard({ id, image, name, price }) {
+export default function ProductCard({ id, imageUrl, name, price }) {
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
     addToCart({
       id,
       name,
-      image,
+      imageUrl,
       price,
     });
   };
@@ -15,7 +16,11 @@ export default function ProductCard({ id, image, name, price }) {
   return (
     <div className="bg-pink-100/80 rounded-3xl p-5 shadow-sm border border-pink-200">
       <div className="bg-white/70 rounded-2xl aspect-square flex items-center justify-center overflow-hidden">
-        <img src={image} alt={name} className="w-44 h-44 object-contain" />
+        <img
+          src={imageUrl}
+          alt={name}
+          className="w-44 h-44 object-contain"
+        />
       </div>
 
       <div className="mt-4 text-center">
@@ -32,3 +37,4 @@ export default function ProductCard({ id, image, name, price }) {
     </div>
   );
 }
+
