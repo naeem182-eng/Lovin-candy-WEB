@@ -1,33 +1,66 @@
+import { useState } from 'react';
 import './ProfileElement.css';
+import axios from 'axios';
+import { useEffect } from 'react';
 
-export default function ProfileElementB () {
+export default function ProfileElementB ({ data }) {
+  const apiBase = import.meta.env.VITE_API_URL;
+  const [orderStats, setOrderStats] = useState({
+    completed: 0, pending: 0, shipping: 0, received: 0
+  });
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const res = await axios.get(`${apiBase}/orders/my-orders`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const orders = res.data.data || [];
+        setOrderStats({
+          completed: orders.filter(o => o.status === 'DELIVERED').length,
+          pending: orders.filter(o => o.status === 'PENDING').length,
+          shipping: orders.filter(o => o.status === 'IN-TRANSIT').length,
+          received: 0
+        });
+      } catch (err) {
+        console.log("Error fetching orders:", err);
+      }
+    };
+
+    if (data) fetchOrders();
+  }, [data, apiBase]);
+
   return (
     <>
       <div className='element-b'>
         <div className='leftinfo'>
           <img className="picpic" src="https://i.ytimg.com/vi/G6ONgCgvnXY/maxresdefault.jpg"></img>
-          <p className='b-id'>id1312213</p>
+          <p className='b-id'>{data ? data.username : 'Guest'}</p>
         </div>
 
         <div className='rightinfo'>
           <div className='tableitems'>
             <span>Completed</span>
-            <span>23</span>
+            <span>{orderStats.completed}</span>
           </div>
 
           <div className='tableitems'>
             <span>To pay</span>
-            <span>2</span>
+            <span>{orderStats.pending}</span>
           </div>
 
           <div className='tableitems'>
             <span>To ship</span>
-            <span>1</span>
+            <span>{orderStats.shipping}</span>
           </div>
 
           <div className='tableitems'>
             <span>To receive</span>
-            <span>0</span>
+            <span>{orderStats.received}</span>
           </div>
         </div>
       </div>
