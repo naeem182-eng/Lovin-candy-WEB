@@ -1,81 +1,157 @@
+import { useEffect, useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard";
 
-const mockProducts = [
-  {
-    id: 1,
-    name: "Blue Raspberry Lollipop Bag",
-    price: 159,
-    image: "/Blue Raspberry Lollipop Bag.png",
-  },
-  {
-    id: 2,
-    name: "Orange Creamsicle Cream Swirl Lollipop Bag",
-    price: 159,
-    image: "/Orange Creamsicle Cream Swirl Lollipop Bag.png",
-  },
-  {
-    id: 3,
-    name: "Strawberry Shortcake Cream Swirl Lollipop Bag",
-    price: 159,
-    image: "/Strawberry Shortcake Cream Swirl Lollipop Bag.png",
-  },
-  {
-    id: 4,
-    name: "Cotton Candy Lollipop Bag",
-    price: 159,
-    image: "/Cotton Candy Lollipop Bag.png",
-  },
-  {
-    id: 5,
-    name: "Mini Sour Rainbow Belts",
-    price: 159,
-    image: "/Mini Sour Rainbow Belts.png",
-  },
-  {
-    id: 6,
-    name: "Jelly Belly UnBEARably Hot Cinnamon Bears",
-    price: 159,
-    image: "/Jelly Belly UnBEARably Hot Cinnamon Bears.png",
-  },
-  {
-    id: 7,
-    name: "Gummy Roses",
-    price: 159,
-    image: "/Gummy Roses.png",
-  },
-  {
-    id: 8,
-    name: "Heavenly Sours Gummy",
-    price: 159,
-    image: "/Heavenly Sours Gummy.png",
-  },
-];
+const API_BASE = "http://localhost:3000/api/products";
 
 export default function Products() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // search
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+
+  // filters
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [sort, setSort] = useState("newest");
+
+  // debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput.trim());
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+//  fetch products (server-side search)
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+
+      try {
+        const params = new URLSearchParams({
+          limit: 20,
+        });
+
+        if (search) params.append("q", search);
+
+        const res = await fetch(`${API_BASE}?${params.toString()}`);
+        const data = await res.json();
+
+        if (data.success) {
+          setProducts(data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [search]);
+
+//  derive categories from products
+  const categories = useMemo(() => {
+    const set = new Set();
+    products.forEach((p) => {
+      if (p.category) set.add(p.category);
+    });
+    return Array.from(set);
+  }, [products]);
+
+//  client-side filter + sort
+  const visibleProducts = useMemo(() => {
+    let list = [...products];
+
+    if (selectedCategory) {
+      list = list.filter(
+        (p) => p.category === selectedCategory
+      );
+    }
+
+    list.sort((a, b) => {
+      if (sort === "price-asc") return a.price - b.price;
+      if (sort === "price-desc") return b.price - a.price;
+      if (sort === "popular") return b.popularity_score - a.popularity_score;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    return list;
+  }, [products, selectedCategory, sort]);
+
+  // render
+  if (loading) {
+    return <p className="text-center mt-10">Loading products...</p>;
+  }
+
   return (
     <section className="w-full">
-    <div className="mx-auto w-full max-w-6xl px-4 py-10"></div>
-    <div className="flex justify-center mb-10">
-       <h1
-          className="
-  w-full max-w-md
-  text-2xl md:text-3xl
-  font-bold text-center
-  bg-[#A6EAFF]
-  py-4 md:py-6
-  rounded-full
-"
-        >
-          Product
-        </h1>
+      <div className="mx-auto w-full max-w-6xl px-4 py-10">
+        {/* title  */}
+        <div className="flex justify-center mb-8">
+          <h1 className="w-full max-w-md text-2xl md:text-3xl font-bold text-center bg-[#A6EAFF] py-4 md:py-6 rounded-full">
+            Product
+          </h1>
         </div>
 
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-  {mockProducts.map((item) => (
-    <ProductCard key={item.id} {...item} />
-  ))}
-</div>
+        {/* controls */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
+          {/* search */}
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search products..."
+            className="flex-1 px-4 py-2 rounded-xl border border-pink-300"
+          />
+
+          {/* category (from product only) */}
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="px-4 py-2 rounded-xl border border-pink-300"
+          >
+            <option value="">All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+
+          {/* sort */}
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="px-4 py-2 rounded-xl border border-pink-300"
+          >
+            <option value="newest">Newest</option>
+            <option value="popular">Most Popular</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+          </select>
+        </div>
+
+        {/* empty state */}
+        {visibleProducts.length === 0 ? (
+          <p className="text-center text-gray-500 mt-20">
+            No products found 😢
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {visibleProducts.map((product) => (
+              <ProductCard
+                key={product._id}
+                imageUrl={product.imageUrl}
+                name={product.name}
+                price={product.price}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
-
