@@ -1,7 +1,7 @@
 import React from "react";
-import { useCart } from "./CartContext";
-import OrderSummary from "./OrderSummary";
-import CartItem from "./CartItem";
+import { useCart } from "../Cart/CartContext.jsx";
+import OrderSummary from "../OrderSummary/OrderSummary.jsx";
+import CartItem from "../CartItem/CartItem.jsx";
 
 const ShoppingCart = () => {
   const { cartItems, handleQuantityChange, handleRemoveItem } = useCart();
