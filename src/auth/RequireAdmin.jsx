@@ -1,15 +1,18 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 
-const isAdminRole = (role) => role === "ADMIN" || role === "SUPER ADMIN";
-
 export default function RequireAdmin() {
-  const { user, loading } = useAuth();
+  const { token, user, loading } = useAuth();
+  const location = useLocation();
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading) return null;
+  if (!token) return <Navigate to="/login" replace state={{ from: location }} />;
 
- 
-  if (!isAdminRole(user?.role)) return <Navigate to="/" replace />;
+  const role = String(user?.role || "").trim().toUpperCase();
+  const norm = role.replace(/\s+/g, "_");
+
+  const isAdmin = norm === "ADMIN" || norm === "SUPER_ADMIN";
+  if (!isAdmin) return <Navigate to="/" replace />;
 
   return <Outlet />;
 }

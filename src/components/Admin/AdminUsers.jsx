@@ -1,31 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "../../auth/AuthProvider";
 
-const RAW_API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL;
 
 export default function AdminUsers() {
-  const API_BASE = useMemo(() => {
-    if (!RAW_API) return "";
-    return RAW_API.endsWith("/api") ? RAW_API : `${RAW_API}/api`;
-  }, []);
+  const { token, user } = useAuth();
 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [q, setQ] = useState("");
+
+  const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER ADMIN";
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
       setError("");
 
-      if (!API_BASE) throw new Error("VITE_API_URL is missing");
+      if (!token) throw new Error("Please login first.");
+      if (!isAdmin) throw new Error("Admin only.");
 
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No token found in localStorage. Please login first.");
-
-      const res = await fetch(`${API_BASE}/users`, {
+      const res = await fetch(`${API}/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || "Failed to fetch users");
 
@@ -41,27 +39,58 @@ export default function AdminUsers() {
   useEffect(() => {
     fetchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [API_BASE]);
+  }, [token, user?.role]);
 
   const deleteAddress = async (userId) => {
     if (!confirm("Delete user address?")) return;
 
-    const token = localStorage.getItem("token");
-
-    await fetch(`${API_BASE}/users/${userId}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    fetchUsers();
+    try {
+      const res = await fetch(`${API}/users/${userId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Delete failed");
+      fetchUsers();
+    } catch (e) {
+      alert(e.message);
+    }
   };
+
+  const filtered = useMemo(() => {
+    const kw = q.trim().toLowerCase();
+    if (!kw) return users;
+    return users.filter((u) => {
+      const username = String(u.username || "").toLowerCase();
+      const email = String(u.email || "").toLowerCase();
+      const role = String(u.role || "").toLowerCase();
+      return username.includes(kw) || email.includes(kw) || role.includes(kw);
+    });
+  }, [users, q]);
 
   if (loading) return <p className="p-6">Loading...</p>;
   if (error) return <p className="p-6 text-red-500">{error}</p>;
 
   return (
     <section className="p-6 bg-[#FAF3F3] min-h-screen">
-      <h2 className="text-2xl font-['Jua'] mb-4">Users Management</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-['Jua']">Users</h2>
+
+        <div className="flex items-center gap-2">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search username / email / role"
+            className="w-72 rounded-xl border px-3 py-2 text-sm outline-none"
+          />
+          <button
+            onClick={fetchUsers}
+            className="rounded-lg bg-white border px-4 py-2 text-sm hover:bg-gray-50"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
 
       <div className="overflow-x-auto">
         <table className="w-full bg-white rounded-xl shadow">
@@ -76,14 +105,14 @@ export default function AdminUsers() {
           </thead>
 
           <tbody>
-            {users.length === 0 ? (
+            {filtered.length === 0 ? (
               <tr>
                 <td colSpan="5" className="p-6 text-center text-gray-500">
                   No users found
                 </td>
               </tr>
             ) : (
-              users.map((u) => (
+              filtered.map((u) => (
                 <tr key={u._id} className="border-t text-sm">
                   <td className="p-3">{u.username}</td>
                   <td className="p-3">{u.email}</td>
