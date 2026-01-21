@@ -19,7 +19,10 @@ import Cart from "./views/Cart";
 import AdminDashboard from "./components/Admin/AdminDashboard.jsx";
 import AdminUsers from "./components/Admin/AdminUsers.jsx";
 import ProductManagement from "./components/Admin/ProductManagement.jsx";
-import AdminChat from  "./components/Admin/AdminChat.jsx"
+import AdminChat from "./components/Admin/AdminChat.jsx";
+import { CartProvider } from "./CartProvider";
+import Checkout from "./components/Checkout/checkoutPage.jsx";
+import ShoppingCart from "./components/ShoppingCart/ShoppingCart.jsx";
 
 const router = createBrowserRouter([
   {
@@ -45,11 +48,14 @@ const router = createBrowserRouter([
       { path: "/profile/address", element: <ProfileAddressButton /> },
       { path: "/specialsets", element: <SpecialSets /> },
       { path: "/cart", element: <Cart /> },
+      { path: "/shoppingcart", element: <ShoppingCart /> },
+      { path: "/checkout", element: <Checkout /> },
     ],
   },
 
   {
-    path: "/admin",element: <AdminLayout />,
+    path: "/admin",
+    element: <AdminLayout />,
     errorElement: (
       <div className="min-h-screen flex justify-center items-center bg-[#FAF3F3]">
         <h1 className="text-4xl">404 Page Not Found</h1>
@@ -58,8 +64,8 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Admin /> },
       { path: "dashboard", element: <AdminDashboard /> },
-      { path: "users", element: <AdminUsers /> }, 
-      { path: "products", element: <ProductManagement />},
+      { path: "users", element: <AdminUsers /> },
+      { path: "products", element: <ProductManagement /> },
       { path: "chat", element: <AdminChat /> },
     ],
   },
@@ -67,9 +73,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
+    <CartProvider>
       <RouterProvider router={router} />
-    </>
+    </CartProvider>
   );
 }
 
