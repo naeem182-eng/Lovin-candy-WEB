@@ -21,6 +21,8 @@ import AdminUsers from "./components/Admin/AdminUsers.jsx";
 import ProductManagement from "./components/Admin/ProductManagement.jsx";
 import AdminChat from "./components/Admin/AdminChat.jsx";
 import { CartProvider } from "./CartProvider";
+import Checkout from "./components/Checkout/checkoutPage.jsx";
+import ShoppingCart from "./components/ShoppingCart/ShoppingCart.jsx";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +48,8 @@ const router = createBrowserRouter([
       { path: "/profile/address", element: <ProfileAddressButton /> },
       { path: "/specialsets", element: <SpecialSets /> },
       { path: "/cart", element: <Cart /> },
+      { path: "/shoppingcart", element: <ShoppingCart /> },
+      { path: "/checkout", element: <Checkout /> },
     ],
   },
 

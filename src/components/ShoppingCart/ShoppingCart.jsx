@@ -2,57 +2,34 @@ import React from "react";
 import { useCart } from "./CartContext";
 import OrderSummary from "./OrderSummary";
 import CartItem from "./CartItem";
-import { GoArrowLeft } from "react-icons/go";
-
-const CART_HEADERS = ["product details", "price", "quantity", "total"];
 
 const ShoppingCart = () => {
   const { cartItems, handleQuantityChange, handleRemoveItem } = useCart();
 
-  const cartCount = cartItems?.length || 0;
-  const displayCount = cartCount > 9 ? cartCount : `0${cartCount}`;
-
   return (
-    <div className="w-full">
-      <div className="w-full py-[130px]">
-        <div className="px-4 md:px-0">
-          <div className="md:container mx-auto">
-            <div className="flex flex-col lg:flex-row gap-10 w-full">
-              <div className="flex flex-col gap-10 w-full">
-                <div className="flex items-center justify-between gap-10 pb-4 border-b border-[#1a1219]">
-                  <h3 className="text-xl text-[#0f0200] font-archivo font-bold capitalize">
-                    shopping cart
-                  </h3>
-                  <h4 className="text-xl text-[#0f0200] font-bold font-archivo capitalize">
-                    ({displayCount})
-                  </h4>
-                </div>
+    <div className="min-h-screen bg-[#f5e6e8] py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl md:text-5xl font-bold text-center mb-12 text-black">
+          Your Shopping Cart
+        </h1>
 
-                <div className="hidden md:grid grid-cols-4 gap-8 pb-4 border-b border-[#1a1219]">
-                  {CART_HEADERS.map((header) => (
-                    <h4
-                      key={header}
-                      className="text-center text-lg text-[#787878] font-archivo font-medium capitalize"
-                    >
-                      {header}
-                    </h4>
-                  ))}
-                </div>
-
-                {cartItems?.length === 0 ? (
-                  <div className="text-center py-10">
-                    <p className="text-xl text-gray-500 mb-4">
-                      Your cart is empty
-                    </p>
-                    <p className="text-[#683292] underline text-lg font-archivo font-medium cursor-pointer">
-                      Start Shopping
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 gap-8 w-full">
-                    {cartItems?.map((cartItem) => (
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1">
+            {cartItems?.length === 0 ? (
+              <div className="text-center py-20">
+                <p className="text-2xl text-gray-600 mb-4">
+                  Your cart is empty
+                </p>
+                <button className="text-blue-600 underline text-lg font-semibold">
+                  Start Shopping
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="bg-white rounded-2xl p-6 mb-8">
+                  {cartItems?.map((cartItem, index) => (
+                    <div key={cartItem.id}>
                       <CartItem
-                        key={cartItem.id}
                         cartItem={cartItem}
                         onIncrease={() =>
                           handleQuantityChange(cartItem.id, "increase")
@@ -62,19 +39,28 @@ const ShoppingCart = () => {
                         }
                         onRemoveItem={() => handleRemoveItem(cartItem.id)}
                       />
-                    ))}
-                  </div>
-                )}
+                      {index < cartItems.length - 1 && (
+                        <hr className="border-black my-6" />
+                      )}
+                    </div>
+                  ))}
+                </div>
 
-                <div>
-                  <button className="flex items-center gap-3 text-xl text-[#683292] font-archivo font-bold capitalize hover:underline">
-                    <GoArrowLeft /> continue shopping
+                <div className="flex flex-col items-center gap-4">
+                  <button className="w-full max-w-md px-8 py-4 bg-[#ffc0e3] hover:bg-[#ffb0d8] text-[#00a6e8] font-bold text-lg rounded-full border-2 border-black transition">
+                    CHECKOUT
+                  </button>
+                  <button className="w-full max-w-md px-8 py-4 bg-[#ffc0e3] hover:bg-[#ffb0d8] text-[#00a6e8] font-bold text-lg rounded-full border-2 border-black transition">
+                    CHECKOUT AS GUEST
                   </button>
                 </div>
-              </div>
+              </>
+            )}
+          </div>
 
-              <OrderSummary cartItems={cartItems} />
-            </div>
+          {/* Right Column - Order Summary */}
+          <div className="lg:w-[380px]">
+            <OrderSummary cartItems={cartItems} />
           </div>
         </div>
       </div>
