@@ -1,10 +1,10 @@
-export default function ProductCard({ image, name, price }) {
+export default function ProductCard({ imageUrl, name, price }) {
   return (
     <div className="bg-pink-100/80 rounded-3xl p-5 shadow-sm border border-pink-200">
       {/* image box */}
       <div className="bg-white/70 rounded-2xl aspect-square flex items-center justify-center overflow-hidden">
         <img
-          src={image}
+          src={imageUrl}
           alt={name}
           className="w-44 h-44 object-contain"
         />
@@ -24,3 +24,4 @@ export default function ProductCard({ image, name, price }) {
     </div>
   );
 }
+
