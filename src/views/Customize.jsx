@@ -11,25 +11,25 @@ export default function Customize() {
   const [selectedCandies, setSelectedCandies] = useState([]);
 
   useEffect(() => {
-  const fetchCandies = async () => {
-    try {
-      const res = await axios.get(`${apiBase}/products?limit=100`); 
-      
-      if (res.data.success) {
-        const filtered = res.data.data.filter(candy => {
-          const category = candy.category ? candy.category.toUpperCase() : "";
-          return category !== "SPECIALSET" && category !== "PACKAGE";
-        });
-        setCandyOptions(filtered);
+    const fetchCandies = async () => {
+      try {
+        const res = await axios.get(`${apiBase}/products?limit=100`);
+
+        if (res.data.success) {
+          const filtered = res.data.data.filter((candy) => {
+            const category = candy.category ? candy.category.toUpperCase() : "";
+            return category !== "SPECIALSET" && category !== "PACKAGE";
+          });
+          setCandyOptions(filtered);
+        }
+      } catch (err) {
+        console.error("Error fetching candies:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching candies:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchCandies();
-}, [apiBase]);
+    };
+    fetchCandies();
+  }, [apiBase]);
 
   const candySection = useRef(null);
 
@@ -37,9 +37,30 @@ export default function Customize() {
   const { addToCart } = useCart();
 
   const packages = [
-    {id: "bag",name: "Bag",candyLimit: 2,price: 200, image: "/bag.png",description: " Pick up to 2 sins 😇 ",},
-    {id: "bowl",name: "Bowl", candyLimit: 4, price: 300, image: "/bowl.png", description: "Pick up to 4 sins 😏",},
-    {id: "jar",name: "Jar", candyLimit: 8, price: 400, image: "/jar.png", description: "Pick up to 8 sins 😈",},
+    {
+      id: "bag",
+      name: "Bag",
+      candyLimit: 2,
+      price: 200,
+      image: "/bag.png",
+      description: " Pick up to 2 sins 😇 ",
+    },
+    {
+      id: "bowl",
+      name: "Bowl",
+      candyLimit: 4,
+      price: 300,
+      image: "/bowl.png",
+      description: "Pick up to 4 sins 😏",
+    },
+    {
+      id: "jar",
+      name: "Jar",
+      candyLimit: 8,
+      price: 400,
+      image: "/jar.png",
+      description: "Pick up to 8 sins 😈",
+    },
   ];
 
   function handleSelectPackage(pkg) {
@@ -54,12 +75,9 @@ export default function Customize() {
   function handleAddCandy(candy) {
     if (selectedCandies.length < selectedSize.candyLimit) {
       const cartId = crypto.randomUUID(); // แนะนำที่สุด
-      setSelectedCandies([
-        ...selectedCandies,
-        { ...candy, cartId }
-      ]);
+      setSelectedCandies([...selectedCandies, { ...candy, cartId }]);
     }
-}
+  }
 
   function handleRemoveCandy(cartId) {
     setSelectedCandies(selectedCandies.filter((c) => c.cartId !== cartId));
@@ -103,7 +121,7 @@ export default function Customize() {
             🍭 Customize Your Sweet Guilty Pleasure
           </h1>
         </div>
-        
+
         <section className="max-w-6xl mx-auto my-16">
           <h2 className="text-3xl text-center mb-8 font-bold">
             Step 1: Choose your level of guilt 😈
@@ -139,7 +157,8 @@ export default function Customize() {
         {selectedSize && (
           <section ref={candySection} className="max-w-6xl mx-auto my-16">
             <h2 className="text-3xl text-center mb-10 font-bold">
-              Step 2: Pick your sweet sins 🍭 ({selectedCandies.length}/{selectedSize.candyLimit})
+              Step 2: Pick your sweet sins 🍭 ({selectedCandies.length}/
+              {selectedSize.candyLimit})
             </h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">

@@ -81,7 +81,7 @@ export default function Cart({ pkg, onClose, isOpen }) {
                         value={item.quantity === "" ? "" : item.quantity}
                         onChange={(e) => {
                           const inputValue = e.target.value;
-                          
+                            
                           if (inputValue === "") {
                             updateQuantity(item._id, ""); 
                             return;
