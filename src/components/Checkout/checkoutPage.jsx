@@ -359,9 +359,7 @@ const Checkout = () => {
                             <h5 className="text-sm text-[#2B3A55] font-bold">
                               {item.name}
                             </h5>
-                            <p className="text-xs text-[#7A8CA5]">
-                              {item.quantity} Desktop License
-                            </p>
+                           
                           </div>
                           <div className="text-right">
                             <p className="text-sm text-[#1e3a8a] font-bold">
