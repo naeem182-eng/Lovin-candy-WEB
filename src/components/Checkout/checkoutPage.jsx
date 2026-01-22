@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { AiTwotoneSafetyCertificate } from "react-icons/ai";
 import { GoArrowLeft } from "react-icons/go";
-<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
-=======
-import { Link, useNavigate } from "react-router-dom";
->>>>>>> 139a9835b80034edf43d3a73c9ac177b86669738
 import { useCart } from "../Cart/UserCart.jsx";
 import axios from "axios";
 
-<<<<<<< HEAD
-const Checkout = () => {
-  const { cartItems } = useCart();
+export default function Checkout({ onSuccess }) {
   const navigate = useNavigate();
+  const apiBase = import.meta.env.VITE_API_URL;
+  const { cartItems, setCartItems } = useCart();
+
   const [currentStep, setCurrentStep] = useState(1); // Step: 1=Payment, 2=Address, 3=Confirm
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [formData, setFormData] = useState({
     // Payment
@@ -22,47 +20,18 @@ const Checkout = () => {
     expirationDate: "",
     cvv: "",
     // Address
-    fullName: "",
-    address: "",
-    city: "",
-    zipCode: "",
-    phone: "",
-  });
-
-  // ตรวจสอบ Login
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login to checkout");
-      navigate("/login");
-    }
-  }, [navigate]);
-=======
-export default function Checkout ({ onSuccess }) {
-  const navigate = useNavigate();
-  const apiBase = import.meta.env.VITE_API_URL;
-  const { cartItems, setCartItems } = useCart();
-
-  
-
-  const [formData, setFormData] = useState({
     email: "",
     fullName: "",
-    phone: "",   
+    phone: "",
     streetAddress: "",
     province: "",
     district: "",
     subDistrict: "",
     postalCode: "",
     agreeTerms: false,
-    paymentMethod: "credit-card",
-    cardNumber: "",
-    expirationDate: "",
-    cvv: "",  
   });
 
-  const [isSubmitted, setIsSubmitted] = useState(false)
-
+  // Fetch user address
   useEffect(() => {
     const fetchUserAddress = async () => {
       try {
@@ -70,7 +39,7 @@ export default function Checkout ({ onSuccess }) {
         if (!token) return;
 
         const res = await axios.get(`${apiBase}/users/me`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const userData = res.data.data;
@@ -95,149 +64,157 @@ export default function Checkout ({ onSuccess }) {
 
     fetchUserAddress();
   }, [apiBase]);
->>>>>>> 139a9835b80034edf43d3a73c9ac177b86669738
 
   const subtotal = cartItems?.reduce(
     (acc, item) => acc + item?.quantity * item?.price,
     0,
   );
-<<<<<<< HEAD
   const estimatedTaxes = subtotal * 0.07;
   const total = (subtotal + estimatedTaxes).toFixed(2);
-=======
-  const estimatedTaxes = subtotal*0.07;
-  const total = (subtotal  + estimatedTaxes).toFixed(2);
->>>>>>> 139a9835b80034edf43d3a73c9ac177b86669738
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleConfirmPayment = () => {
-    if (!formData.cardNumber || !formData.expirationDate || !formData.cvv) {
-      alert("Please fill in all payment details");
-      return;
+    if (formData.paymentMethod === "credit-card") {
+      if (!formData.cardNumber || !formData.expirationDate || !formData.cvv) {
+        alert("Please fill in all payment details");
+        return;
+      }
     }
-<<<<<<< HEAD
-    setCurrentStep(2); // ไป Step Address
+    setCurrentStep(2); // Go to Address step
   };
 
   const handleConfirmAddress = () => {
-    if (!formData.fullName || !formData.address || !formData.phone) {
-      alert("Please fill in all address details");
+    setIsSubmitted(true);
+
+    const {
+      fullName,
+      phone,
+      streetAddress,
+      province,
+      district,
+      subDistrict,
+      postalCode,
+    } = formData;
+
+    if (
+      !fullName ||
+      !phone ||
+      !streetAddress ||
+      !province ||
+      !district ||
+      !subDistrict ||
+      !postalCode
+    ) {
+      alert("Please fill in all required shipping information fields.");
       return;
     }
-    setCurrentStep(3); // ไป Step Confirm
+
+    if (phone.length < 9) {
+      alert("Please enter a valid phone number.");
+      return;
+    }
+
+    if (postalCode.length !== 5) {
+      alert("Postal code must be exactly 5 digits.");
+      return;
+    }
+
+    if (!formData.agreeTerms) {
+      alert("Please agree to the Terms of Service and Privacy Policy.");
+      return;
+    }
+
+    setCurrentStep(3); // Go to Confirm step
   };
 
-  const handleConfirmOrder = () => {
-    alert("Order confirmed! Thank you for your purchase.");
-    navigate("/profile/order"); // ไปหน้า My Order
+  const confirmOrder = async () => {
+    if (cartItems.length === 0) {
+      alert("Your cart is empty.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
+
+      const shippingAddress = {
+        fullName: formData.fullName || "",
+        phone: formData.phone || "",
+        streetAddress: formData.streetAddress || "",
+        province: formData.province || "",
+        district: formData.district || "",
+        subDistrict: formData.subDistrict || "",
+        postalCode: formData.postalCode || "",
+      };
+
+      const items = cartItems.map((item) => {
+        const isCustom = String(item._id).startsWith("custom-");
+
+        return {
+          product_id: isCustom ? null : item._id,
+          isCustom: isCustom,
+          customDetails: isCustom ? item.details : null,
+          quantity: item.quantity,
+          price: item.price,
+        };
+      });
+
+      await axios.put(
+        `${apiBase}/users/update-address`,
+        {
+          address: shippingAddress,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      const res = await axios.post(
+        `${apiBase}/orders`,
+        {
+          items,
+          shippingAddress,
+          total: Number(total),
+          paymentMethod: formData.paymentMethod,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (res.data.success) {
+        if (setCartItems) {
+          setCartItems([]);
+        }
+        localStorage.removeItem("cart_storage");
+        if (onSuccess) onSuccess();
+        navigate("/profile/order");
+      }
+    } catch (err) {
+      console.error("Confirm order error:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Failed to confirm order.");
+    }
+  };
+
+  const getInputClass = (value) => {
+    const baseClass =
+      "w-full px-4 py-3 border rounded-xl focus:outline-none transition ";
+    const statusClass =
+      isSubmitted && !value
+        ? "border-red-500 bg-red-50 focus:border-red-600"
+        : "border-[#6EDCFF]/40 focus:border-[#6EDCFF]";
+    return baseClass + statusClass;
   };
 
   const handleReturnToCart = () => {
     navigate("/shoppingcart");
-=======
-    console.log("Form submitted:", formData);
-    alert("Payment complete... (Demo only)");
-  };
-
-  const confirmOrder = async () => {
-    setIsSubmitted(true);
-
-  if (cartItems.length === 0) {
-    alert("Your cart is empty.");
-    return;
-  }
-
-  const { fullName, phone, streetAddress, province, district, subDistrict, postalCode, agreeTerms } = formData;
-
-  if (!fullName || !phone || !streetAddress || !province || !district || !subDistrict || !postalCode) {
-    alert("Please fill in all required shipping information fields.");
-    return;
-  }
-
-  if (phone.length < 9) {
-    alert("Please enter a valid phone number.");
-    return;
-  }
-  if (postalCode.length !== 5) {
-    alert("Postal code must be exactly 5 digits.");
-    return;
-  }
-
-  if (!agreeTerms) {
-    alert("Please agree to the Terms of Service and Privacy Policy.");
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) return navigate("/login");
-
-    const shippingAddress = {
-      fullName: formData.fullName || "",
-      phone: formData.phone || "",
-      streetAddress: formData.streetAddress || "",
-      province: formData.province || "",
-      district: formData.district || "",
-      subDistrict: formData.subDistrict || "",
-      postalCode: formData.postalCode || "",
-    };
-
-    const items = cartItems.map((item) => {
-    const isCustom = String(item._id).startsWith("custom-");
-
-    return {
-      product_id: isCustom ? null : item._id,
-      isCustom: isCustom,
-      customDetails: isCustom ? item.details : null,
-      quantity: item.quantity,
-      price: item.price,
-    };
-});
-
-    await axios.put(`${apiBase}/users/update-address`, { 
-      address: shippingAddress 
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    const res = await axios.post(`${apiBase}/orders`, {
-      items,
-      shippingAddress,
-      total: Number(total),
-      paymentMethod: formData.paymentMethod
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    if (res.data.success) {
-
-      if (setCartItems) {
-        setCartItems([]); 
-      }
-
-      localStorage.removeItem("cart_storage");
-
-      if (onSuccess) onSuccess();
-      navigate("/profile/order");
-    }
-  } catch (err) {
-    console.error("Confirm order error:", err);
-  }
-};
-
-  const getInputClass = (value) => {
-    const baseClass = "w-full px-4 py-3 border rounded-xl focus:outline-none transition ";
-    
-    const statusClass = (isSubmitted && !value) 
-      ? "border-red-500 bg-red-50 focus:border-red-600" 
-      : "border-[#6EDCFF]/40 focus:border-[#6EDCFF]";
-
-    return baseClass + statusClass;
->>>>>>> 139a9835b80034edf43d3a73c9ac177b86669738
   };
 
   return (
@@ -282,7 +259,6 @@ export default function Checkout ({ onSuccess }) {
                         Choose payment method
                       </h2>
 
-<<<<<<< HEAD
                       <div className="space-y-4">
                         {/* Credit Card */}
                         <div
@@ -444,160 +420,143 @@ export default function Checkout ({ onSuccess }) {
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm text-[#2B3A55] font-medium mb-2">
-                            Full Name *
+                            Enter email *
                           </label>
-=======
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm text-[#2B3A55] font-medium mb-2">
-                          Enter email *
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          className={getInputClass(formData.email)}
-                          placeholder="your.email@example.com"
-                        />
-                        <p className="text-xs text-[#7A8CA5] mt-1">
-                          This email will be associated with your purchase
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div>
-                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Full Name *</label>
->>>>>>> 139a9835b80034edf43d3a73c9ac177b86669738
                           <input
-                            type="text"
-                            name="fullName"
-                            value={formData.fullName}
+                            type="email"
+                            name="email"
+                            value={formData.email}
                             onChange={handleInputChange}
-<<<<<<< HEAD
-                            className="w-full px-4 py-3 border border-[#6EDCFF]/40 rounded-xl focus:outline-none focus:border-[#6EDCFF] transition"
-                            placeholder="John Doe"
+                            className={getInputClass(formData.email)}
+                            placeholder="your.email@example.com"
                           />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm text-[#2B3A55] font-medium mb-2">
+                              Full Name *
+                            </label>
+                            <input
+                              type="text"
+                              name="fullName"
+                              value={formData.fullName}
+                              onChange={handleInputChange}
+                              className={getInputClass(formData.fullName)}
+                              placeholder="Som Pong"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-[#2B3A55] font-medium mb-2">
+                              Phone Number *
+                            </label>
+                            <input
+                              type="text"
+                              name="phone"
+                              value={formData.phone}
+                              onChange={handleInputChange}
+                              className={getInputClass(formData.phone)}
+                              placeholder="0812345678"
+                            />
+                          </div>
                         </div>
 
                         <div>
                           <label className="block text-sm text-[#2B3A55] font-medium mb-2">
-                            Address *
+                            Street Address *
                           </label>
                           <input
                             type="text"
-                            name="address"
-                            value={formData.address}
+                            name="streetAddress"
+                            value={formData.streetAddress}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-[#6EDCFF]/40 rounded-xl focus:outline-none focus:border-[#6EDCFF] transition"
-                            placeholder="123 Main St"
+                            className={getInputClass(formData.streetAddress)}
+                            placeholder="House No., Building, Soi, Street"
                           />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm text-[#2B3A55] font-medium mb-2">
-                              City
+                              Province *
                             </label>
                             <input
                               type="text"
-                              name="city"
-                              value={formData.city}
+                              name="province"
+                              value={formData.province}
                               onChange={handleInputChange}
-                              className="w-full px-4 py-3 border border-[#6EDCFF]/40 rounded-xl focus:outline-none focus:border-[#6EDCFF] transition"
+                              className={getInputClass(formData.province)}
                               placeholder="Bangkok"
                             />
                           </div>
-
                           <div>
                             <label className="block text-sm text-[#2B3A55] font-medium mb-2">
-                              Zip Code
+                              District *
                             </label>
                             <input
                               type="text"
-                              name="zipCode"
-                              value={formData.zipCode}
+                              name="district"
+                              value={formData.district}
                               onChange={handleInputChange}
-                              className="w-full px-4 py-3 border border-[#6EDCFF]/40 rounded-xl focus:outline-none focus:border-[#6EDCFF] transition"
-                              placeholder="10110"
+                              className={getInputClass(formData.district)}
+                              placeholder="Pathum Wan"
                             />
                           </div>
                         </div>
 
-                        <div>
-                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">
-                            Phone *
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm text-[#2B3A55] font-medium mb-2">
+                              Sub-District *
+                            </label>
+                            <input
+                              type="text"
+                              name="subDistrict"
+                              value={formData.subDistrict}
+                              onChange={handleInputChange}
+                              className={getInputClass(formData.subDistrict)}
+                              placeholder="Lumpini"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-[#2B3A55] font-medium mb-2">
+                              Postal Code *
+                            </label>
+                            <input
+                              type="text"
+                              name="postalCode"
+                              value={formData.postalCode}
+                              onChange={handleInputChange}
+                              className={getInputClass(formData.postalCode)}
+                              placeholder="10330"
+                              maxLength={5}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-2">
+                          <input
+                            type="checkbox"
+                            name="agreeTerms"
+                            id="agreeTerms"
+                            checked={formData.agreeTerms}
+                            onChange={handleInputChange}
+                            className="mt-1 w-4 h-4 text-[#6EDCFF] border-[#6EDCFF]/40 rounded focus:ring-[#6EDCFF]"
+                          />
+                          <label
+                            htmlFor="agreeTerms"
+                            className="text-sm text-[#7A8CA5]"
+                          >
+                            I agree to the{" "}
+                            <span className="text-[#6EDCFF] hover:underline cursor-pointer">
+                              Terms of Service
+                            </span>{" "}
+                            and{" "}
+                            <span className="text-[#6EDCFF] hover:underline cursor-pointer">
+                              Privacy Policy
+                            </span>
+                            . *
                           </label>
-                          <input
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-[#6EDCFF]/40 rounded-xl focus:outline-none focus:border-[#6EDCFF] transition"
-                            placeholder="0812345678"
-=======
-                            className={getInputClass(formData.fullName)}
-                            placeholder="Som Pong"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Phone Number *</label>
-                          <input
-                            type="text"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleInputChange}
-                            className={getInputClass(formData.phone)}
-                            placeholder="0812345678"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div className="mt-4">
-                        <label className="block text-sm text-[#2B3A55] font-medium mb-2">Street Address *</label>
-                        <input
-                          type="text"
-                          name="streetAddress"
-                          value={formData.streetAddress}
-                          onChange={handleInputChange}
-                          className={getInputClass(formData.streetAddress)}
-                          placeholder="House No., Building, Soi, Street"
-                          required
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div>
-                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Province *</label>
-                          <input type="text" name="province" value={formData.province} onChange={handleInputChange} className={getInputClass(formData.province)} 
-                          placeholder="Bangkok" />
-                        </div>
-                        <div>
-                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">District *</label>
-                          <input type="text" name="district" value={formData.district} onChange={handleInputChange} className={getInputClass(formData.district)} placeholder="Pathum Wan" />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div>
-                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Sub-District *</label>
-                          <input type="text" name="subDistrict" value={formData.subDistrict} onChange={handleInputChange} className={getInputClass(formData.subDistrict)} placeholder="Lumpini" />
-                        </div>
-                        <div>
-                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Postal Code *</label>
-                          <input 
-                            type="text" 
-                            name="postalCode" 
-                            value={formData.postalCode} 
-                            onChange={handleInputChange} 
-                            className={getInputClass(formData.postalCode)}
-                            placeholder="10330" 
-                            maxLength={5}
-                            required
->>>>>>> 139a9835b80034edf43d3a73c9ac177b86669738
-                          />
                         </div>
                       </div>
                     </div>
@@ -640,11 +599,12 @@ export default function Checkout ({ onSuccess }) {
                           <p className="text-gray-600 capitalize">
                             {formData.paymentMethod.replace("-", " ")}
                           </p>
-                          {formData.paymentMethod === "credit-card" && (
-                            <p className="text-sm text-gray-500 mt-1">
-                              **** **** **** {formData.cardNumber.slice(-4)}
-                            </p>
-                          )}
+                          {formData.paymentMethod === "credit-card" &&
+                            formData.cardNumber && (
+                              <p className="text-sm text-gray-500 mt-1">
+                                **** **** **** {formData.cardNumber.slice(-4)}
+                              </p>
+                            )}
                         </div>
 
                         {/* Shipping Address */}
@@ -653,9 +613,14 @@ export default function Checkout ({ onSuccess }) {
                             Shipping Address
                           </h3>
                           <p className="text-gray-600">{formData.fullName}</p>
-                          <p className="text-gray-600">{formData.address}</p>
                           <p className="text-gray-600">
-                            {formData.city} {formData.zipCode}
+                            {formData.streetAddress}
+                          </p>
+                          <p className="text-gray-600">
+                            {formData.subDistrict}, {formData.district}
+                          </p>
+                          <p className="text-gray-600">
+                            {formData.province} {formData.postalCode}
                           </p>
                           <p className="text-gray-600">{formData.phone}</p>
                         </div>
@@ -673,7 +638,7 @@ export default function Checkout ({ onSuccess }) {
                               >
                                 <div className="flex items-center gap-3">
                                   <img
-                                    src={item.image}
+                                    src={item.imageUrl}
                                     alt={item.name}
                                     className="w-12 h-12 object-contain rounded border"
                                   />
@@ -722,32 +687,14 @@ export default function Checkout ({ onSuccess }) {
                         Back
                       </button>
 
-<<<<<<< HEAD
                       <button
                         type="button"
-                        onClick={handleConfirmOrder}
+                        onClick={confirmOrder}
                         className="px-8 py-3 bg-[#6EDCFF] hover:bg-[#3CC8FF] text-white font-bold rounded-full transition shadow-md hover:shadow-lg"
                       >
                         Confirm Order
                       </button>
                     </div>
-=======
-                  <Link to="/profile/order">
-                    <button
-                      onClick={handleSubmit}
-                      className="px-8 py-3 bg-[#6EDCFF] hover:bg-[#3CC8FF] text-white font-bold rounded-full transition shadow-md hover:shadow-lg"
-                    >
-                      Enter payment
-                    </button>
-                  </Link>
-
-                    <button
-                    className="bg-red-500 p-3"
-                    type="button"
-                    onClick={confirmOrder}>
-                      TestAddOrder
-                    </button>
->>>>>>> 139a9835b80034edf43d3a73c9ac177b86669738
                   </div>
                 )}
               </div>
@@ -761,7 +708,7 @@ export default function Checkout ({ onSuccess }) {
 
                   <div className="px-6 py-4 border-b border-[#bae6fd] space-y-3">
                     <p className="text-base text-[#475569] font-medium flex items-center justify-between">
-                      Subtotal
+                      {cartItems.length} Items
                       <span className="text-[#1e3a8a] font-bold">
                         ${subtotal.toFixed(2)}
                       </span>
@@ -772,10 +719,6 @@ export default function Checkout ({ onSuccess }) {
                         ${estimatedTaxes.toFixed(2)}
                       </span>
                     </p>
-<<<<<<< HEAD
-=======
-                  
->>>>>>> 139a9835b80034edf43d3a73c9ac177b86669738
                   </div>
 
                   <div className="px-6 py-4 border-b border-[#bae6fd]">
@@ -785,9 +728,6 @@ export default function Checkout ({ onSuccess }) {
                     </p>
                   </div>
 
-<<<<<<< HEAD
-=======
-                  {/* Order Details */}
                   <div className="px-6 py-4">
                     <h4 className="text-lg text-[#1e3a8a] font-bold mb-4">
                       Order Details
@@ -796,7 +736,7 @@ export default function Checkout ({ onSuccess }) {
                     <div className="space-y-3">
                       {cartItems.map((item) => (
                         <div
-                          key={item.id}
+                          key={item._id}
                           className="flex items-center gap-3 pb-3 border-b border-[#bae6fd] last:border-0"
                         >
                           <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center border border-[#bae6fd]">
@@ -810,7 +750,6 @@ export default function Checkout ({ onSuccess }) {
                             <h5 className="text-sm text-[#2B3A55] font-bold">
                               {item.name}
                             </h5>
-                          
                           </div>
                           <div className="text-right">
                             <p className="text-sm text-[#1e3a8a] font-bold">
@@ -822,8 +761,6 @@ export default function Checkout ({ onSuccess }) {
                     </div>
                   </div>
 
-                  {/* Security Badge */}
->>>>>>> 139a9835b80034edf43d3a73c9ac177b86669738
                   <div className="px-6 py-4 bg-[#e0f2fe] rounded-b-3xl">
                     <p className="text-xs text-[#475569] font-medium flex items-center gap-2">
                       <AiTwotoneSafetyCertificate
@@ -842,4 +779,4 @@ export default function Checkout ({ onSuccess }) {
       </div>
     </div>
   );
-};
+}
