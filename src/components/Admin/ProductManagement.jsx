@@ -20,7 +20,7 @@ export default function ProductManagement() {
   const [form, setForm] = useState({
   
     name: "",
-    type: "",
+    category: "",
     price: "",
     stock: "",
     image: "",
@@ -61,7 +61,7 @@ export default function ProductManagement() {
   const openCreate = () => {
     setMode("create");
     setEditingId(null);
-    setForm({ name: "", type: "", price: "", stock: "", image: "" });
+    setForm({ name: "", category: "", price: "", stock: "", image: "" });
     setOpen(true);
   };
 
@@ -70,7 +70,7 @@ export default function ProductManagement() {
     setEditingId(p._id); 
     setForm({
       name: p.name || "",
-      type: p.type || p.category || "", 
+      category: p.category || "", 
       price: String(p.price ?? ""),
       stock: String(p.stock ?? ""),
       image: (p.imageUrl || p.images?.[0] || "").toString(),
@@ -85,7 +85,7 @@ export default function ProductManagement() {
 
   const validate = () => {
     if (!form.name.trim()) return "Please enter Product name";
-    if (!form.type.trim()) return "Please enter Type";
+    if (!form.category.trim()) return "Please enter Category";
     const price = Number(form.price);
     const stock = Number(form.stock);
     if (Number.isNaN(price) || price < 0) return "Price must be a number >= 0";
@@ -101,7 +101,7 @@ export default function ProductManagement() {
 
     const payload = {
       name: form.name.trim(),
-      type: form.type.trim(),
+      category: form.category.trim(),
       price: Number(form.price),
       stock: Number(form.stock),
       imageUrl: form.image.trim(),
@@ -214,7 +214,7 @@ export default function ProductManagement() {
           <div className="grid grid-cols-[160px_1.6fr_160px_140px_140px_180px] gap-2 px-4 pb-2 text-sm text-gray-700">
             <div className="text-center">ID</div>
             <div className="text-center">PRODUCT NAME</div>
-            <div className="text-center">TYPE</div>
+            <div className="text-center">CATEGORY</div>
             <div className="text-center">PRICE</div>
             <div className="text-center">STOCK</div>
             <div className="text-center">ACTION</div>
@@ -248,7 +248,7 @@ export default function ProductManagement() {
                       </div>
                     </div>
 
-                    <div className="text-center">{p.type || p.category}</div>
+                    <div className="text-center">{p.category || "-"}</div>
                     <div className="text-center">{p.price}</div>
                     <div className="text-center">{p.stock}</div>
 
@@ -313,10 +313,10 @@ export default function ProductManagement() {
             <form onSubmit={onSubmit} className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm text-gray-700">Type</label>
+                  <label className="text-sm text-gray-700">Category</label>
                   <input
-                    name="type"
-                    value={form.type}
+                    name="category"
+                    value={form.category}
                     onChange={onChange}
                     className="w-full rounded-xl border px-3 py-2 text-sm"
                     placeholder="Gummy / Chocolate / Set"
