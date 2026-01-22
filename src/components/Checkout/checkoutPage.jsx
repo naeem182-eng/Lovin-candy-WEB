@@ -120,6 +120,7 @@ export default function Checkout({ onSuccess }) {
       alert("Please enter a valid phone number.");
       return;
     }
+
     if (postalCode.length !== 5) {
       alert("Postal code must be exactly 5 digits.");
       return;
@@ -197,8 +198,8 @@ export default function Checkout({ onSuccess }) {
         navigate("/profile/order");
       }
     } catch (err) {
-      console.error("Confirm order error:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Failed to confirm order.");
+      console.error("Confirm order error:", err);
+      alert("Failed to confirm order. Please try again.");
     }
   };
 
@@ -226,23 +227,37 @@ export default function Checkout({ onSuccess }) {
               <h1 className="text-3xl md:text-4xl text-[#2B3A55] font-archivo font-bold text-center mb-2">
                 Checkout
               </h1>
-              <p className="text-center text-[#7A8CA5] text-sm">
-                Log in to check out faster and find your past purchases
-                <button className="ml-2 text-[#6EDCFF] hover:text-[#3CC8FF] font-medium underline">
-                  Log in
-                </button>
-              </p>
+              <div className="flex justify-center gap-4 mt-4">
+                <span
+                  className={`text-sm ${currentStep >= 1 ? "text-[#6EDCFF] font-bold" : "text-gray-400"}`}
+                >
+                  1. Payment
+                </span>
+                <span className="text-gray-400">→</span>
+                <span
+                  className={`text-sm ${currentStep >= 2 ? "text-[#6EDCFF] font-bold" : "text-gray-400"}`}
+                >
+                  2. Address
+                </span>
+                <span className="text-gray-400">→</span>
+                <span
+                  className={`text-sm ${currentStep >= 3 ? "text-[#6EDCFF] font-bold" : "text-gray-400"}`}
+                >
+                  3. Confirm
+                </span>
+              </div>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-10">
-              {/* Left Column - Form */}
+              {/* Left Column */}
               <div className="flex-1">
-                <div className="space-y-8">
-                  {/* Contact Information */}
-                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#6EDCFF]/20">
-                    <h2 className="text-2xl text-[#2B3A55] font-archivo font-bold mb-6">
-                      Contact Information
-                    </h2>
+                {/* STEP 1: Payment Method */}
+                {currentStep === 1 && (
+                  <div className="space-y-8">
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#6EDCFF]/20">
+                      <h2 className="text-2xl text-[#2B3A55] font-archivo font-bold mb-6">
+                        Choose payment method
+                      </h2>
 
                       <div className="space-y-4">
                         {/* Credit Card */}
@@ -544,39 +559,36 @@ export default function Checkout({ onSuccess }) {
                           </label>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="flex items-start gap-2">
-                        <input
-                          type="checkbox"
-                          name="agreeTerms"
-                          id="agreeTerms"
-                          checked={formData.agreeTerms}
-                          onChange={handleInputChange}
-                          className="mt-1 w-4 h-4 text-[#6EDCFF] border-[#6EDCFF]/40 rounded focus:ring-[#6EDCFF]"
-                        />
-                        <label
-                          htmlFor="agreeTerms"
-                          className="text-sm text-[#7A8CA5]"
-                        >
-                          I agree to the{" "}
-                          <span className="text-[#6EDCFF] hover:underline cursor-pointer">
-                            Terms of Service
-                          </span>{" "}
-                          and{" "}
-                          <span className="text-[#6EDCFF] hover:underline cursor-pointer">
-                            Privacy Policy
-                          </span>
-                          . *
-                        </label>
-                      </div>
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(1)}
+                        className="flex items-center gap-2 text-[#6EDCFF] hover:text-[#3CC8FF] font-semibold transition"
+                      >
+                        <GoArrowLeft size={20} />
+                        Back
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleConfirmAddress}
+                        className="px-8 py-3 bg-[#6EDCFF] hover:bg-[#3CC8FF] text-white font-bold rounded-full transition shadow-md hover:shadow-lg"
+                      >
+                        Continue
+                      </button>
                     </div>
                   </div>
+                )}
 
-                  {/* Payment Method */}
-                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#6EDCFF]/20">
-                    <h2 className="text-2xl text-[#2B3A55] font-archivo font-bold mb-6">
-                      Choose payment method
-                    </h2>
+                {/* STEP 3: Confirm Order */}
+                {currentStep === 3 && (
+                  <div className="space-y-8">
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#6EDCFF]/20">
+                      <h2 className="text-2xl text-[#2B3A55] font-archivo font-bold mb-6">
+                        Confirm Your Order
+                      </h2>
 
                       <div className="space-y-6">
                         {/* Payment Info */}
@@ -645,124 +657,46 @@ export default function Checkout({ onSuccess }) {
                               </div>
                             ))}
                           </div>
-                          <div className="flex gap-2">
-                            <div className="px-2 py-1 bg-[#1A1F71] text-white text-xs font-bold rounded">
-                              VISA
-                            </div>
-                            <div className="px-2 py-1 bg-[#EB001B] text-white text-xs font-bold rounded">
-                              MC
-                            </div>
-                          </div>
-                        </div>
 
-                        {formData.paymentMethod === "credit-card" && (
-                          <div className="mt-4 space-y-4">
-                            <div>
-                              <label className="block text-sm text-[#2B3A55] font-medium mb-2">
-                                Card Number
-                              </label>
-                              <input
-                                type="text"
-                                name="cardNumber"
-                                value={formData.cardNumber}
-                                onChange={handleInputChange}
-                                placeholder="1234 5678 9012 3456"
-                                maxLength={19}
-                                className="w-full px-4 py-3 border border-[#6EDCFF]/40 rounded-xl focus:outline-none focus:border-[#6EDCFF] transition"
-                              />
+                          {/* Total */}
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <div className="flex justify-between text-sm text-gray-600 mb-2">
+                              <span>Subtotal</span>
+                              <span>${subtotal.toFixed(2)}</span>
                             </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-sm text-[#2B3A55] font-medium mb-2">
-                                  Expiration date
-                                </label>
-                                <input
-                                  type="text"
-                                  name="expirationDate"
-                                  value={formData.expirationDate}
-                                  onChange={handleInputChange}
-                                  placeholder="MM / YY"
-                                  maxLength={7}
-                                  className="w-full px-4 py-3 border border-[#6EDCFF]/40 rounded-xl focus:outline-none focus:border-[#6EDCFF] transition"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm text-[#2B3A55] font-medium mb-2">
-                                  CVV
-                                </label>
-                                <input
-                                  type="text"
-                                  name="cvv"
-                                  value={formData.cvv}
-                                  onChange={handleInputChange}
-                                  placeholder="000"
-                                  maxLength={4}
-                                  className="w-full px-4 py-3 border border-[#6EDCFF]/40 rounded-xl focus:outline-none focus:border-[#6EDCFF] transition"
-                                />
-                              </div>
+                            <div className="flex justify-between text-sm text-gray-600 mb-2">
+                              <span>Estimated Taxes</span>
+                              <span>${estimatedTaxes.toFixed(2)}</span>
                             </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* PayPal */}
-                      <div
-                        className={`border-2 rounded-xl p-4 cursor-pointer transition ${
-                          formData.paymentMethod === "paypal"
-                            ? "border-[#6EDCFF] bg-[#EAF9FF]"
-                            : "border-[#6EDCFF]/20 hover:border-[#6EDCFF]/40"
-                        }`}
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            paymentMethod: "paypal",
-                          }))
-                        }
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <input
-                              type="radio"
-                              name="paymentMethod"
-                              value="paypal"
-                              checked={formData.paymentMethod === "paypal"}
-                              onChange={handleInputChange}
-                              className="w-5 h-5 text-[#6EDCFF]"
-                            />
-                            <span className="text-lg text-[#2B3A55] font-semibold">
-                              PayPal
-                            </span>
-                          </div>
-                          <div className="text-[#003087] font-bold text-sm">
-                            Pay<span className="text-[#009CDE]">Pal</span>
+                            <div className="flex justify-between text-lg font-bold text-[#2B3A55] mt-3 pt-3 border-t">
+                              <span>Total</span>
+                              <span className="text-[#fb7185]">${total}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Navigation Buttons */}
-                  <div className="flex items-center justify-between">
-                    <button
-                      type="button"
-                      className="flex items-center gap-2 text-[#6EDCFF] hover:text-[#3CC8FF] font-semibold transition"
-                    >
-                      <GoArrowLeft size={20} />
-                      Return to cart
-                    </button>
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(2)}
+                        className="flex items-center gap-2 text-[#6EDCFF] hover:text-[#3CC8FF] font-semibold transition"
+                      >
+                        <GoArrowLeft size={20} />
+                        Back
+                      </button>
 
                       <button
                         type="button"
                         onClick={confirmOrder}
                         className="px-8 py-3 bg-[#6EDCFF] hover:bg-[#3CC8FF] text-white font-bold rounded-full transition shadow-md hover:shadow-lg"
                       >
-                        Enter payment
+                        Confirm Order
                       </button>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Right Column - Order Summary */}
@@ -772,10 +706,9 @@ export default function Checkout({ onSuccess }) {
                     Order Summary
                   </h3>
 
-                  {/* Price Summary */}
                   <div className="px-6 py-4 border-b border-[#bae6fd] space-y-3">
                     <p className="text-base text-[#475569] font-medium flex items-center justify-between">
-                      {cartItems.length} Items
+                      {cartItems.length} licenses x 1 seats
                       <span className="text-[#1e3a8a] font-bold">
                         ${subtotal.toFixed(2)}
                       </span>
@@ -788,7 +721,6 @@ export default function Checkout({ onSuccess }) {
                     </p>
                   </div>
 
-                  {/* Total */}
                   <div className="px-6 py-4 border-b border-[#bae6fd]">
                     <p className="text-lg text-[#1e3a8a] font-bold flex items-center justify-between">
                       Total ({cartItems.length} items)
@@ -843,6 +775,8 @@ export default function Checkout({ onSuccess }) {
               </div>
             </div>
           </div>
-    
+        </div>
+      </div>
+    </div>
   );
 }
