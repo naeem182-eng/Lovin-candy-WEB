@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { AiTwotoneSafetyCertificate } from "react-icons/ai";
 import { GoArrowLeft } from "react-icons/go";
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../Cart/UserCart.jsx";
 import axios from "axios";
 
 export default function Checkout({ onSuccess }) {
+=======
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../Cart/UserCart.jsx";
+import axios from "axios";
+
+export default function Checkout ({ onSuccess }) {
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
   const navigate = useNavigate();
   const apiBase = import.meta.env.VITE_API_URL;
   const { cartItems, setCartItems } = useCart();
 
+<<<<<<< HEAD
   const [currentStep, setCurrentStep] = useState(1); // Step: 1=Payment, 2=Address, 3=Confirm
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -32,6 +41,28 @@ export default function Checkout({ onSuccess }) {
   });
 
   // Fetch user address
+=======
+  
+
+  const [formData, setFormData] = useState({
+    email: "",
+    fullName: "",
+    phone: "",   
+    streetAddress: "",
+    province: "",
+    district: "",
+    subDistrict: "",
+    postalCode: "",
+    agreeTerms: false,
+    paymentMethod: "credit-card",
+    cardNumber: "",
+    expirationDate: "",
+    cvv: "",  
+  });
+
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
   useEffect(() => {
     const fetchUserAddress = async () => {
       try {
@@ -39,7 +70,11 @@ export default function Checkout({ onSuccess }) {
         if (!token) return;
 
         const res = await axios.get(`${apiBase}/users/me`, {
+<<<<<<< HEAD
           headers: { Authorization: `Bearer ${token}` },
+=======
+          headers: { Authorization: `Bearer ${token}` }
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
         });
 
         const userData = res.data.data;
@@ -115,6 +150,7 @@ export default function Checkout({ onSuccess }) {
       alert("Please fill in all required shipping information fields.");
       return;
     }
+<<<<<<< HEAD
 
     if (phone.length < 9) {
       alert("Please enter a valid phone number.");
@@ -215,6 +251,106 @@ export default function Checkout({ onSuccess }) {
 
   const handleReturnToCart = () => {
     navigate("/shoppingcart");
+=======
+    console.log("Form submitted:", formData);
+    alert("Payment complete... (Demo only)");
+  };
+
+  const confirmOrder = async () => {
+    setIsSubmitted(true);
+
+  if (cartItems.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  const { fullName, phone, streetAddress, province, district, subDistrict, postalCode, agreeTerms } = formData;
+
+  if (!fullName || !phone || !streetAddress || !province || !district || !subDistrict || !postalCode) {
+    alert("Please fill in all required shipping information fields.");
+    return;
+  }
+
+  if (phone.length < 9) {
+    alert("Please enter a valid phone number.");
+    return;
+  }
+  if (postalCode.length !== 5) {
+    alert("Postal code must be exactly 5 digits.");
+    return;
+  }
+
+  if (!agreeTerms) {
+    alert("Please agree to the Terms of Service and Privacy Policy.");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return navigate("/login");
+
+    const shippingAddress = {
+      fullName: formData.fullName || "",
+      phone: formData.phone || "",
+      streetAddress: formData.streetAddress || "",
+      province: formData.province || "",
+      district: formData.district || "",
+      subDistrict: formData.subDistrict || "",
+      postalCode: formData.postalCode || "",
+    };
+
+    const items = cartItems.map((item) => {
+    const isCustom = String(item._id).startsWith("custom-");
+
+    return {
+      product_id: isCustom ? null : item._id,
+      isCustom: isCustom,
+      customDetails: isCustom ? item.details : null,
+      quantity: item.quantity,
+      price: item.price,
+    };
+});
+
+    await axios.put(`${apiBase}/users/update-address`, { 
+      address: shippingAddress 
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const res = await axios.post(`${apiBase}/orders`, {
+      items,
+      shippingAddress,
+      total: Number(total),
+      paymentMethod: formData.paymentMethod
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (res.data.success) {
+
+      if (setCartItems) {
+        setCartItems([]); 
+      }
+
+      localStorage.removeItem("cart_storage");
+
+      if (onSuccess) onSuccess();
+      navigate("/profile/order");
+    }
+  } catch (err) {
+    console.error("Confirm order error:", err);
+  }
+};
+
+  const getInputClass = (value) => {
+    const baseClass = "w-full px-4 py-3 border rounded-xl focus:outline-none transition ";
+    
+    const statusClass = (isSubmitted && !value) 
+      ? "border-red-500 bg-red-50 focus:border-red-600" 
+      : "border-[#6EDCFF]/40 focus:border-[#6EDCFF]";
+
+    return baseClass + statusClass;
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
   };
 
   return (
@@ -259,6 +395,7 @@ export default function Checkout({ onSuccess }) {
                         Choose payment method
                       </h2>
 
+<<<<<<< HEAD
                       <div className="space-y-4">
                         {/* Credit Card */}
                         <div
@@ -385,9 +522,28 @@ export default function Checkout({ onSuccess }) {
                             </div>
                           </div>
                         </div>
+=======
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm text-[#2B3A55] font-medium mb-2">
+                          Enter email *
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className={getInputClass(formData.email)}
+                          placeholder="your.email@example.com"
+                        />
+                        <p className="text-xs text-[#7A8CA5] mt-1">
+                          This email will be associated with your purchase
+                        </p>
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
                       </div>
                     </div>
 
+<<<<<<< HEAD
                     <div className="flex items-center justify-between">
                       <button
                         type="button"
@@ -472,6 +628,76 @@ export default function Checkout({ onSuccess }) {
                             onChange={handleInputChange}
                             className={getInputClass(formData.streetAddress)}
                             placeholder="House No., Building, Soi, Street"
+=======
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Full Name *</label>
+                          <input
+                            type="text"
+                            name="fullName"
+                            value={formData.fullName}
+                            onChange={handleInputChange}
+                            className={getInputClass(formData.fullName)}
+                            placeholder="Som Pong"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Phone Number *</label>
+                          <input
+                            type="text"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                            className={getInputClass(formData.phone)}
+                            placeholder="0812345678"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <label className="block text-sm text-[#2B3A55] font-medium mb-2">Street Address *</label>
+                        <input
+                          type="text"
+                          name="streetAddress"
+                          value={formData.streetAddress}
+                          onChange={handleInputChange}
+                          className={getInputClass(formData.streetAddress)}
+                          placeholder="House No., Building, Soi, Street"
+                          required
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Province *</label>
+                          <input type="text" name="province" value={formData.province} onChange={handleInputChange} className={getInputClass(formData.province)} 
+                          placeholder="Bangkok" />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">District *</label>
+                          <input type="text" name="district" value={formData.district} onChange={handleInputChange} className={getInputClass(formData.district)} placeholder="Pathum Wan" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Sub-District *</label>
+                          <input type="text" name="subDistrict" value={formData.subDistrict} onChange={handleInputChange} className={getInputClass(formData.subDistrict)} placeholder="Lumpini" />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-[#2B3A55] font-medium mb-2">Postal Code *</label>
+                          <input 
+                            type="text" 
+                            name="postalCode" 
+                            value={formData.postalCode} 
+                            onChange={handleInputChange} 
+                            className={getInputClass(formData.postalCode)}
+                            placeholder="10330" 
+                            maxLength={5}
+                            required
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
                           />
                         </div>
 
@@ -687,6 +913,7 @@ export default function Checkout({ onSuccess }) {
                         Back
                       </button>
 
+<<<<<<< HEAD
                       <button
                         type="button"
                         onClick={confirmOrder}
@@ -695,6 +922,23 @@ export default function Checkout({ onSuccess }) {
                         Confirm Order
                       </button>
                     </div>
+=======
+                  <Link to="/profile/order">
+                    <button
+                      onClick={handleSubmit}
+                      className="px-8 py-3 bg-[#6EDCFF] hover:bg-[#3CC8FF] text-white font-bold rounded-full transition shadow-md hover:shadow-lg"
+                    >
+                      Enter payment
+                    </button>
+                  </Link>
+
+                    <button
+                    className="bg-red-500 p-3"
+                    type="button"
+                    onClick={confirmOrder}>
+                      TestAddOrder
+                    </button>
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
                   </div>
                 )}
               </div>
@@ -719,6 +963,10 @@ export default function Checkout({ onSuccess }) {
                         ${estimatedTaxes.toFixed(2)}
                       </span>
                     </p>
+<<<<<<< HEAD
+=======
+                  
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
                   </div>
 
                   <div className="px-6 py-4 border-b border-[#bae6fd]">
@@ -750,6 +998,10 @@ export default function Checkout({ onSuccess }) {
                             <h5 className="text-sm text-[#2B3A55] font-bold">
                               {item.name}
                             </h5>
+<<<<<<< HEAD
+=======
+                          
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
                           </div>
                           <div className="text-right">
                             <p className="text-sm text-[#1e3a8a] font-bold">
@@ -779,4 +1031,8 @@ export default function Checkout({ onSuccess }) {
       </div>
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+};
+>>>>>>> cbb483cdb69bed8414608a8831e26ee8d1251d57
