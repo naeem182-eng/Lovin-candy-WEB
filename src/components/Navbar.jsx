@@ -3,7 +3,7 @@ import { BsCart4, BsList, BsX } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import { useCart } from "../components/Cart/UserCart.jsx";
 
-export default function Navbar({ onCartOpen }) {
+export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [userRole, setUserRole] = useState(null);
