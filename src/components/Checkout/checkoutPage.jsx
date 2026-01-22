@@ -198,8 +198,8 @@ export default function Checkout({ onSuccess }) {
         navigate("/profile/order");
       }
     } catch (err) {
-      console.error("Confirm order error:", err);
-      alert("Failed to confirm order. Please try again.");
+      console.error("Confirm order error:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Failed to confirm order.");
     }
   };
 
@@ -708,7 +708,7 @@ export default function Checkout({ onSuccess }) {
 
                   <div className="px-6 py-4 border-b border-[#bae6fd] space-y-3">
                     <p className="text-base text-[#475569] font-medium flex items-center justify-between">
-                      {cartItems.length} licenses x 1 seats
+                      {cartItems.length} Items
                       <span className="text-[#1e3a8a] font-bold">
                         ${subtotal.toFixed(2)}
                       </span>
