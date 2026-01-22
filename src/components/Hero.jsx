@@ -72,7 +72,7 @@ export default function Hero() {
           <img
             src="/hero-lovincandy.png"
             alt="LovinCandy Hero"
-            onClick={() => navigate("/customize")}
+            onClick={() => navigate("/products")}
             className="
               w-full
               max-w-none
