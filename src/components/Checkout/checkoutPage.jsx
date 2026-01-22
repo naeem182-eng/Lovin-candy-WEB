@@ -160,6 +160,8 @@ export default function Checkout({ onSuccess }) {
         return {
           product_id: isCustom ? null : item._id,
           isCustom: isCustom,
+          name: item.name, 
+          imageUrl: item.imageUrl,
           customDetails: isCustom ? item.details : null,
           quantity: item.quantity,
           price: item.price,
@@ -201,8 +203,64 @@ export default function Checkout({ onSuccess }) {
       console.error("Confirm order error:", err.response?.data || err.message);
       alert(err.response?.data?.message || "Failed to confirm order.");
     }
-  };
+    
+    setIsSubmitted(true);
 
+    const { fullName, phone, streetAddress, province, district, subDistrict, postalCode, agreeTerms } = formData;
+    if (!fullName || !phone || !streetAddress || !province || !district || !subDistrict || !postalCode) {
+      alert("Please fill in all required shipping information.");
+      return;
+    }
+    if (!agreeTerms) {
+      alert("Please agree to the terms and conditions.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
+
+      const shippingAddress = { fullName, phone, streetAddress, province, district, subDistrict, postalCode };
+
+      const items = cartItems.map((item) => {
+        const isCustom = String(item._id).startsWith("custom-");
+        return {
+          product_id: isCustom ? null : item._id,
+          isCustom: isCustom,
+          name: item.name,
+          price: item.price,
+          imageUrl: item.imageUrl,
+          customDetails: isCustom ? item.details : null, 
+          quantity: item.quantity,
+        };
+      });
+
+      await axios.put(`${apiBase}/users/update-address`, { 
+        address: shippingAddress 
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const res = await axios.post(`${apiBase}/orders`, {
+        items,
+        shippingAddress,
+        total: Number(total),
+        paymentMethod: formData.paymentMethod
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.data.success) {
+        setCartItems([]);
+        localStorage.removeItem("cart_storage");
+        if (onSuccess) onSuccess();
+        navigate("/profile/order");
+      }
+    } catch (err) {
+      console.error("Confirm order error:", err);
+      alert("Something went wrong. Please try again.");
+    }
+  };
   const getInputClass = (value) => {
     const baseClass =
       "w-full px-4 py-3 border rounded-xl focus:outline-none transition ";
@@ -750,6 +808,11 @@ export default function Checkout({ onSuccess }) {
                             <h5 className="text-sm text-[#2B3A55] font-bold">
                               {item.name}
                             </h5>
+                            {item.isCustom && item.details?.candies && (
+                              <p className="text-[10px] text-gray-500 line-clamp-1">
+                                {item.details.candies.join(", ")}
+                              </p>
+                            )}
                           </div>
                           <div className="text-right">
                             <p className="text-sm text-[#1e3a8a] font-bold">
