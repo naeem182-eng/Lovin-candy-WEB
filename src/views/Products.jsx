@@ -23,7 +23,7 @@ export default function Products() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearch(searchInput.trim());
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [searchInput]);
