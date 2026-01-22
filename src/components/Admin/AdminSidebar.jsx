@@ -6,14 +6,14 @@ const menus = [
   { to: "/admin/users", label: "Users", icon: "👤" },
   { to: "/admin/products", label: "Products", icon: "🍭" },
   { to: "/admin/chat", label: "Chat", icon: "💬" },
+  { to: "/admin/orders", label: "Orders", icon: "💻" },
 ];
 
 export default function AdminSidebar({ isOpen }) {
   return (
     <aside
       className={[
-        "h-[calc(100vh-64px)]", 
-        
+        "h-[calc(100vh-64px)]",
         "bg-gray-200/80",
         "transition-all duration-300",
         "border-r border-black/10",
