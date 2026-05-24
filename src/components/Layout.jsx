@@ -22,8 +22,8 @@ export default function Layout () {
       </main>
 
       {shouldShowCart && (
-        <Cart 
-          isOpen={isCartOpen} 
+        <Cart
+          isOpen={isCartOpen}
           onClose={closeCart}
         />
       )}

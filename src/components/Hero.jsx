@@ -21,8 +21,8 @@ export default function Hero() {
         <div>
           <h1 className="font-['Jua'] text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight">
             Welcome to{" "}
-            <span className="text-[#FF74B1]">Lovin</span>
-            <span className="text-[#12AAFF]">Candy</span>
+            <span className="text-[#FF74B1]">Hayati</span>
+            <span className="text-[#12AAFF]">Sweet</span>
           </h1>
 
           <p className="font-['Patrick Hand'] text-lg md:text-xl text-gray-700 mb-10">
@@ -70,8 +70,8 @@ export default function Hero() {
         {/* RIGHT : IMAGE */}
         <div className="flex justify-center">
           <img
-            src="/hero-lovincandy.png"
-            alt="LovinCandy Hero"
+            src="/hero-hayatisweet.png"
+            alt="HayatiSweet Hero"
             onClick={() => navigate("/products")}
             className="
               w-full

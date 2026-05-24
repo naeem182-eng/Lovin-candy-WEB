@@ -59,10 +59,10 @@ export default function Navbar() {
         <Link to="/" className="flex items-center gap-2 font-['Jua'] text-xl">
           <img
             src="/logo.png"
-            alt="LovinCandy logo"
+            alt="HayatiSweet logo"
             className="h-10 w-auto object-contain md:h-14"
           />
-          <span className="hidden md:inline">LovinCandy</span>
+          <span className="hidden md:inline">HayatiSweet</span>
         </Link>
 
         {/* DESKTOP MENU */}

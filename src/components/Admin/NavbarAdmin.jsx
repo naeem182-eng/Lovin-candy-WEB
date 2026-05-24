@@ -9,10 +9,10 @@ export default function NavbarAdmin() {
         <Link to="/" className="flex items-center gap-2 font-['Jua'] text-xl">
           <img
             src="/logo.png"
-            alt="LovinCandy logo"
+            alt="HayatiSweet logo"
             className="h-10 w-auto object-contain md:h-14"
           />
-          <span className="hidden sm:inline">LovinCandy</span>
+          <span className="hidden sm:inline">HayatiSweet</span>
         </Link>
 
         {/* Menu (desktop only) */}
